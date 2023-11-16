@@ -1,0 +1,166 @@
+:root {
+  --articleEditTextAreaHeight: 70vh;
+}
+
+body {
+  height: 100%;
+  background-color: #f6f6f6;
+}
+
+textarea {
+  height: var(--articleEditTextAreaHeight);
+}
+
+.alert-top {
+  position: fixed;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.article-edit-preview {
+  position: relative;
+  height: var(--articleEditTextAreaHeight);
+  background-color: #ffffff;
+  overflow: scroll;
+}
+
+.btn-loading {
+  min-width: 6rem;
+}
+
+.image-preview {
+  position: relative;
+  flex: 1 1 25%;
+}
+
+.delete-cross-btn {
+  display: inline;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  border-radius: 10em;
+  padding: 3px 5px 3px 5px;
+  text-decoration: none;
+  font: 700 19px/15px sans-serif;
+  background: red;
+  border: none;
+  color: #fff;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.5), inset 0 2px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  transition: background 0.5s;
+  cursor: pointer;
+}
+
+.delete-cross-btn:hover {
+  background: red;
+  padding: 4px 6px 4px 6px;
+  top: -11px;
+  right: -11px;
+  color: #fff;
+}
+.delete-cross-btn:active {
+  background: red;
+  top: -10px;
+  right: -11px;
+}
+
+.dropzone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-width: 2px;
+  border-radius: 2px;
+  border-color: #eeeeee;
+  border-style: dashed;
+  background-color: #ffffff;
+  color: grey;
+  outline: none;
+  transition: border 0.24s ease-in-out;
+}
+
+.tag-new {
+  height: 31px;
+}
+
+/* overrides */
+.nav-link {
+  font-size: 1.2rem;
+}
+
+#loginNavLink:focus {
+  color: rgba(255, 255, 255, 0.55);
+}
+
+.navbar-brand {
+  font-size: 1.5rem;
+}
+
+.navbar-brand img {
+  height: 2rem;
+  width: 2rem;
+  margin-right: 1.5rem;
+}
+
+.Sidebar {
+  position: sticky;
+  top: 82px;
+}
+
+.ScrollUpArrow {
+  position: fixed;
+  bottom: 10px;
+  right: 5vw;
+}
+
+#email {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+@media (min-width: 1200px) {
+  #email {
+    font-size: 0.81rem;
+  }
+}
+
+@media (max-width: 576px) {
+  h1 {
+    font-size: calc(1rem + 1.5vw);
+  }
+  h2 {
+    font-size: calc(0.9rem + 1.5vw);
+  }
+  h3 {
+    font-size: calc(0.8rem + 1.5vw);
+  }
+  h4 {
+    font-size: calc(0.7rem + 1.5vw);
+  }
+  h5 {
+    font-size: calc(0.6rem + 1.5vw);
+  }
+}
+#dropZoneModal {
+  opacity: 0.8;
+  background: #f6f6f6;
+  width: 100%;
+  height: 100%;
+  z-index: 1022;
+  position: fixed;
+  left: 0;
+  top: 0;
+}
+#dropZoneModal div {
+  color: grey;
+  position: relative;
+  font-size: 5rem;
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  text-align: center;
+  transform: translateY(20%);
+}
