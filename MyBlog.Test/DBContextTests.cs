@@ -1,4 +1,4 @@
-using MyBlog.Models;
+using My_Blog.Data;
 using MyBlog.Models.Articles;
 
 namespace MyBlog.Test
@@ -8,12 +8,12 @@ namespace MyBlog.Test
         private const string connectionString = "Server=MY-THINKPAD;Database=MyBlog;Trusted_Connection=True;";
 
         private readonly ITestOutputHelper _output;
-        private readonly MyBlogDbContext _context;
+        private readonly MyBlogContext _context;
 
         public DBContextTests(ITestOutputHelper output)
         {
             _output = output;
-            _context = new MyBlogDbContext(connectionString);
+            _context = new MyBlogContext(connectionString);
         }
 
         [Fact]

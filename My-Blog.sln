@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog", "MyBlog\MyBlog.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlog.Test", "MyBlog.Test\MyBlog.Test.csproj", "{82CCC268-C2B3-4CC0-930E-D361B7699D0A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{3A43DEBE-6694-4C85-BB61-636678D69532}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main_myblog20230101.yml = .github\workflows\main_myblog20230101.yml
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

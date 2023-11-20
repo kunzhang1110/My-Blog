@@ -1,5 +1,8 @@
-﻿namespace MyBlog.Models.Articles
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MyBlog.Models.Articles
 {
+    [Table("MyBlogArticleTag")]
     public class ArticleTag
     {
         public int Id { get; set; }

@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using MyBlog.Models;
 using MyBlog.Models.Security;
 using Microsoft.OpenApi.Models;
+using My_Blog.Data;
+using My_Blog.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,27 +20,29 @@ builder.Services
     .AddControllers()
     .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);//prevent navigation properties reference loops
 
-builder.Services.AddDbContext<MyBlogDbContext>(
+builder.Services.AddDbContext<MyBlogContext>(
     opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>() //add identity service and role-based authorization service
-                .AddEntityFrameworkStores<MyBlogDbContext>();
+builder.Services.AddIdentityCore<User>() //add identity service and role-based authorization service
+        .AddRoles<Role>()
+        .AddEntityFrameworkStores<MyBlogContext>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+    .AddJwtBearer(opt =>
     {
-        options.SaveToken = true;
-        options.RequireHttpsMetadata = false;
-        options.TokenValidationParameters = new TokenValidationParameters() //parameters used to validate tokens sent by users; should match tokens sent by server
+        opt.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = false,
             ValidateAudience = false,
-
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:Token"]))
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWTSettings:TokenKey"]))
         };
     });
+
+builder.Services.AddAuthorization();
+
+builder.Services.AddScoped<ImageService>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -103,6 +106,22 @@ app.MapControllerRoute(
     name: "default",
     pattern: "api/{controller}/{action=Index}/{id?}");
 app.MapFallbackToFile("index.html");
+
+
+//apply migrations to database 
+var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<MyBlogContext>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+try
+{
+    await context.Database.MigrateAsync(); //apply migrations
+    await DbInitializer.Initialize(context, userManager); //if context is empty, initialize the database
+}
+catch (Exception ex)
+{
+    logger.LogError(ex, "A problem occurred during migration");
+}
 
 app.Run();
 

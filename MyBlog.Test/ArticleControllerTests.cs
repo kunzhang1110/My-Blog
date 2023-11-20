@@ -1,8 +1,8 @@
-using MyBlog.Models;
 using MyBlog.Controllers;
 
 using Microsoft.Extensions.Logging;
 using Moq;
+using My_Blog.Data;
 
 namespace MyBlog.Test
 {
@@ -14,7 +14,7 @@ namespace MyBlog.Test
 
         public ArticleControllerTests(ITestOutputHelper output)
         {
-            var mockContext = new Mock<MyBlogDbContext>(""); //empty connection string
+            var mockContext = new Mock<MyBlogContext>(""); //empty connection string
             mockContext.Setup((context) => context.SaveChangesAsync(default)).Returns(Task.FromResult(1)).Verifiable();
             _output = output;
             _controller = new ArticlesController(mockContext.Object, _logger);

@@ -2,6 +2,7 @@
 
 namespace MyBlog.Models.Articles
 {
+    [Table("MyBlogArticles")]
     public class Article
     {
         public Article()

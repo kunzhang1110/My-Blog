@@ -3,9 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
-using MyBlog.Models;
 using MyBlog.Models.Articles;
 using MyBlog.Models.Security;
+using My_Blog.Data;
+using My_Blog.Services;
 
 namespace MyBlog.Controllers
 {
@@ -13,34 +14,29 @@ namespace MyBlog.Controllers
     [Route("api/[controller]")]
     public class ArticlesController : ControllerBase
     {
-        private readonly MyBlogDbContext _context;
+        private readonly MyBlogContext _context;
         private readonly ILogger _logger;
         private readonly string _imageDirectory;
+        private readonly ImageService _imageService;
 
 
-        public ArticlesController(MyBlogDbContext context, ILogger<ArticlesController> logger)
+        public ArticlesController(MyBlogContext context, ImageService imageService, ILogger<ArticlesController> logger)
         {
             _context = context;
             _logger = logger;
+            _imageService = imageService;
             _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UserData");
         }
 
-        private async Task DeleteRedundantTags()
-        {
 
-            var tags = _context.Tags.Include(t => t.ArticleTags).ToList();
-            foreach (var tag in tags)
-            {
-                if (tag.ArticleTags.Count == 0)
-                    _context.Tags.Remove(tag);
-            }
-            await _context.SaveChangesAsync();
-        }
 
-        // Get an article's summary
+
+        /// <summary>
+        /// Get summary (anything before the first ## in a markdown file) of an article.
+        /// </summary>
         public static string GetSummary(string body)
         {
-            var pattern = @"^([\W\w]*?)##"; //match anything before the first ## in md
+            var pattern = @"^([\W\w]*?)##"; //match anything before the first ##
             var match = Regex.Match(body, pattern);
             return match.Groups[1].Value; //return the 1st group
         }
@@ -101,25 +97,9 @@ namespace MyBlog.Controllers
             return article;
         }
 
-        private async Task UpdateImages(List<IFormFile> files, int id)
-        {
-
-            string directoryPath = Path.Combine(_imageDirectory, id.ToString());
-            if (Directory.Exists(directoryPath)) Directory.Delete(directoryPath, true); //delete existing directory
-            Directory.CreateDirectory(directoryPath);
-
-            foreach (var formFile in files)
-            {
-                if (formFile.Length > 0)
-                {
-                    string filePath = Path.Combine(directoryPath, formFile.FileName);
-                    using var fileStream = System.IO.File.Create(filePath);
-                    await formFile.CopyToAsync(fileStream);
-                }
-            }
-        }
-
-
+        /// <summary>
+        /// Get a list of of article summaries.
+        /// </summary>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticles()
         {
@@ -140,13 +120,11 @@ namespace MyBlog.Controllers
                         Body = GetSummary(article.Body),
                         Views = article.Views,
                         Tags = article.ArticleTags.Select(at => at.Tag).ToList(),
-                        ImageUrls = new List<string>()
                     });
             }
 
             return articleSummaryDtos;
         }
-
 
 
         [HttpGet("{id}")]
@@ -167,21 +145,7 @@ namespace MyBlog.Controllers
             _context.Entry(article).State = EntityState.Modified;
             await _context.SaveChangesAsync();
 
-            // Get images
-            var directoryPath = Path.Combine(_imageDirectory, id.ToString());
-            var imageUrls = new List<string>();
-            if (Directory.Exists(directoryPath))
-            {
-                var fileUrls = Directory.GetFiles(directoryPath);
-                if (fileUrls.Length == 0)
-                {//delete empty directory
-                    Directory.Delete(directoryPath, true);
-                }
-                else
-                {
-                    imageUrls = fileUrls.Select(f => Path.GetFileName(f)).ToList(); // get file names
-                }
-            }
+            var imageUrls = _imageService.GetImagesUrls(id);
 
             return new ArticleDto()
             {
@@ -195,16 +159,18 @@ namespace MyBlog.Controllers
             };
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> PostArticle([FromForm] UpdateArticleDto request, [FromForm] List<IFormFile> files)
         {
             var article = await UpdateArticle(null, request);
-            await UpdateImages(files, article.Id);
+            await _imageService.AddOrUpdateImages(files, article.Id);
             return CreatedAtAction("GetArticle", new { id = article.Id }, article);
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutArticle([FromRoute] int id, [FromForm] UpdateArticleDto request, [FromForm] List<IFormFile> files)
         {
@@ -214,7 +180,7 @@ namespace MyBlog.Controllers
             if (article != null)
             {
                 await UpdateArticle(article, request);
-                await UpdateImages(files, id);
+                await _imageService.AddOrUpdateImages(files, id);
                 return NoContent();
             }
             else
@@ -223,20 +189,28 @@ namespace MyBlog.Controllers
             }
         }
 
-        [Authorize(Roles = UserRoles.Admin)]
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteArticle(int id)
         {
             var article = await _context.Articles.FindAsync(id);
-            if (article == null)
+            if (article == null) return NotFound();
+
+            await _imageService.DeleteImageDirectory(article.Id);
+
+            //delete redundant tags
+            var tags = _context.Tags.Include(t => t.ArticleTags).ToList();
+            foreach (var tag in tags)
             {
-                return NotFound();
+                if (tag.ArticleTags.Count == 0) // if the tag is not used by other articles
+                    _context.Tags.Remove(tag);
             }
-            await UpdateImages(new List<IFormFile>(), article.Id);
-            await DeleteRedundantTags();
+
             _context.Articles.Remove(article);
+
             await _context.SaveChangesAsync();
-            return NoContent();
+
+            return Ok();
         }
     }
 }

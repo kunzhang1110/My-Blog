@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyBlog.Models.Articles
 {
+
+    [Table("MyBlogTags")]
     public class Tag
     {
         public Tag()

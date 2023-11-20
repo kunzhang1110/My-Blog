@@ -13,15 +13,14 @@ namespace MyBlog.Controllers
     [Route("api/[controller]")]
     public class AuthenticateController : ControllerBase
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
 
 
-        public AuthenticateController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
+        public AuthenticateController(UserManager<User> userManager, IConfiguration configuration)
         {
-            this._userManager = userManager;
-            this._roleManager = roleManager;
+            _userManager = userManager;
+
             _configuration = configuration;
 
         }
@@ -46,12 +45,11 @@ namespace MyBlog.Controllers
                     authClaims.Add(new Claim(ClaimTypes.Role, userRole));
                 }
 
-                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+                var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWTSettings:TokenKey"]));
 
 
                 var token = new JwtSecurityToken(
-                    issuer: _configuration["JWT:ValidIssuer"],
-                    audience: _configuration["JWT:ValidAudience"],
+
                     expires: DateTime.Now.AddHours(3),
                     claims: authClaims,
                     signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
@@ -76,7 +74,7 @@ namespace MyBlog.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            var user = new ApplicationUser()
+            var user = new User()
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
@@ -105,26 +103,18 @@ namespace MyBlog.Controllers
             if (userExists != null)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User already exists!" });
 
-            ApplicationUser user = new ApplicationUser()
+            User user = new User()
             {
                 Email = model.Email,
                 SecurityStamp = Guid.NewGuid().ToString(),
                 UserName = model.Username
             };
             var result = await _userManager.CreateAsync(user, model.Password);
+            await _userManager.AddToRolesAsync(user, new string[] { "Member", "Admin" });
+
             if (!result.Succeeded)
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "User creation failed! Please check user details and try again." });
 
-
-            //if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))//add custom roles to role manager
-            //    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-            //if (!await _roleManager.RoleExistsAsync(UserRoles.User))
-            //    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-
-            if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-            {
-                await _userManager.AddToRoleAsync(user, UserRoles.Admin);
-            }
 
             return Ok(new Response { Status = "Success", Message = "User created successfully!" });
         }
