@@ -29,6 +29,16 @@ textarea {
   min-width: 6rem;
 }
 
+.btn-article-card-top-right {
+  background-color: transparent;
+  border-color: transparent;
+  border-radius: 0;
+}
+
+.btn-article-card-top-right:focus {
+  box-shadow: none;
+}
+
 .image-preview {
   position: relative;
   flex: 1 1 25%;

@@ -13,7 +13,7 @@ import {
   ModalHeader,
   ModalFooter,
 } from "reactstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscEllipsis } from "react-icons/vsc";
 import { GoEye } from "react-icons/go";
 import { MdDateRange } from "react-icons/md";
@@ -34,6 +34,7 @@ export const ArticleCard = ({ article, id }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
   const toggleArticleCard = (e) => {
@@ -71,24 +72,32 @@ export const ArticleCard = ({ article, id }) => {
     });
   };
 
+  const isInAriclePage = location.pathname.slice(-2) == article.id;
+
   return (
     <Card className="m-2">
       <CardBody className="m-3">
         <Row>
           <Col xs="11">
-            <h1>{article.title}</h1>
+            {/* <a href={`/articles/${article.id}`} className="a-article-card-title"> */}
+            <h1
+              onClick={() => {
+                if (!isInAriclePage) navigate(`/articles/${article.id}`);
+              }}
+              style={{ cursor: isInAriclePage ? null : "pointer" }}
+            >
+              {article.title}
+            </h1>
+            {/* </a> */}
           </Col>
           {/* top right dropdown menu */}
           <Col xs="1" style={{ textAlign: "right" }}>
             <Dropdown isOpen={isDropdownOpen} toggle={toggleDropDown}>
-              <DropdownToggle tag="span">
-                <a
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
-                  style={{ color: "grey" }}
-                >
-                  <VscEllipsis />
-                </a>
+              <DropdownToggle
+                color="transparent"
+                className="btn-article-card-top-right"
+              >
+                <VscEllipsis color="grey" />
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem

@@ -47,7 +47,7 @@ export const ArticleEditPage = () => {
 
   const addFiles = useCallback(
     (files) => {
-      if (files.length == 0) return;
+      if (files.length === 0) return;
       let existingImages = structuredClone(images);
       let image_dir_path_prefix,
         md_file = null;
@@ -276,7 +276,7 @@ export const ArticleEditPage = () => {
   }, [isAlertOpen]);
 
   useEffect(() => {
-    if (textAreaElement.current !== null && body.selectionStart != -1) {
+    if (textAreaElement.current !== null && body.selectionStart !== -1) {
       textAreaElement.current.focus();
       textAreaElement.current.selectionStart =
         textAreaElement.current.selectionEnd = body.selectionStart + 1;
@@ -417,7 +417,7 @@ export const ArticleEditPage = () => {
                               //if md is written as <img>, src is as is; if md is written in ![]() format, src is uriEncoded
                               (img) =>
                                 encodeURIComponent(img.name) === src ||
-                                img.name == src
+                                img.name === src
                             ); //find exising images
                             if (image !== undefined) {
                               src = image.previewURL;
