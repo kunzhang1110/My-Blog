@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using MyBlog.Models.Articles;
-using MyBlog.Models.Security;
+using MyBlog.Models.Account;
 
 namespace My_Blog.Data
 {

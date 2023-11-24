@@ -9,11 +9,9 @@ namespace My_Blog.Services
     public class ImageService
     {
         private readonly string _imageDirectory;
-        private readonly ILogger _logger;
 
-        public ImageService(ILogger<ImageService> logger)
+        public ImageService()
         {
-            _logger = logger;
             _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UserData");
         }
 

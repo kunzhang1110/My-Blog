@@ -4,20 +4,20 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using MyBlog.Models.Security;
+using MyBlog.Models.Account;
 
 
 namespace MyBlog.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AuthenticateController : ControllerBase
+    public class AccountController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly IConfiguration _configuration;
 
 
-        public AuthenticateController(UserManager<User> userManager, IConfiguration configuration)
+        public AccountController(UserManager<User> userManager, IConfiguration configuration)
         {
             _userManager = userManager;
 

@@ -5,30 +5,32 @@ import { ArticleCard } from "../components/ArticleCard";
 import { SideBar } from "../components/SideBar";
 import { Spinner } from "../components/Spinner";
 import { ScrollUpArrow } from "../components/ScrollUpArrow";
+import { AppBreadCrumb } from "../components/AppBreadCrumb";
+import { api } from "../app/api";
+import { AppPagination } from "../components/AppPagination";
 
 export const ArticlesListPage = () => {
   const [articlesList, setArticlesList] = useState([]);
+  const [paginationData, setPaginationData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const { category } = useParams();
 
-  useEffect(() => {
+  const updateData = async (pageNumber = 1) => {
+    setIsLoading(true);
+    let response = await api.articles.getArticles(category, pageNumber);
+    setArticlesList(await response.json());
+    setPaginationData(JSON.parse(response.headers.get("Pagination")));
+    setIsLoading(false);
+  };
+
+  useEffect(async () => {
     document.title = "Kun's Blog - " + (category ? category : "Home");
-    fetch(`/api/articles`) //fetch short articles
-      .then((res) => res.json())
-      .then((data) => {
-        if (category) {
-          //filter articles by tag when url is articles/category
-          data = data.filter((a) => {
-            return a.tags.find((t) => t.name === category);
-          });
-        }
-        setArticlesList(data);
-        setIsLoading(false);
-      });
+    await updateData();
   }, [category]);
 
   useEffect(() => {
+    console.log(paginationData);
     if (isAlertOpen) {
       setTimeout(() => {
         setIsAlertOpen(false);
@@ -62,11 +64,17 @@ export const ArticlesListPage = () => {
                 size: 9,
               }}
             >
-              <div>
+              {category ? <AppBreadCrumb /> : null}
+
+              <div style={{ marginTop: "20px" }}>
                 {articlesList.map((article) => (
                   <ArticleCard article={article} key={article.id} />
                 ))}
               </div>
+              <AppPagination
+                handlePageChange={updateData}
+                paginationData={paginationData ?? null}
+              />
             </Col>
             <Col
               xxl={{
@@ -79,6 +87,7 @@ export const ArticlesListPage = () => {
           <Alert color="info" isOpen={isAlertOpen} className="alert-top">
             Email Address Copied!
           </Alert>
+          MAp
         </>
       )}
     </>

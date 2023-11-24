@@ -1,4 +1,4 @@
-﻿namespace MyBlog.Models.Security
+﻿namespace MyBlog.Models.Account
 {
     public class Response
     {

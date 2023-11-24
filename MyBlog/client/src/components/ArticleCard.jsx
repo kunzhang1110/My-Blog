@@ -17,10 +17,11 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { VscEllipsis } from "react-icons/vsc";
 import { GoEye } from "react-icons/go";
 import { MdDateRange } from "react-icons/md";
-import { useAuth } from "../Auth";
+import { useAuth } from "../app/auth.jsx";
 import { Spinner } from "./Spinner";
 import { Tag } from "./Tag";
-import { ReactMarkdownMemo } from "./ReactMarkdownMemo";
+import { AppReactMarkdown } from "./AppReactMarkdown.jsx";
+import { api } from "../app/api.jsx";
 
 //React Markdown common components
 export const rmComponents = {};
@@ -41,11 +42,15 @@ export const ArticleCard = ({ article, id }) => {
     e.preventDefault();
     if (collapsed) {
       setIsLoading(true);
-      fetch(`/api/articles/${article.id}`)
-        .then((res) => res.json())
+      api.articles
+        .getArticle(article.id)
         .then((data) => {
           setBody(data.body);
           setCollapsed(false);
+          setIsLoading(false);
+        })
+        .catch((err) => {
+          console.log(err);
           setIsLoading(false);
         });
     } else {
@@ -61,10 +66,7 @@ export const ArticleCard = ({ article, id }) => {
       Authorization: `Bearer ${user.token}`,
     });
     setIsDeleting(true);
-    fetch(`/api/articles/${article.id}`, {
-      method: "DELETE",
-      headers,
-    }).then(() => {
+    api.articles.deleteArticle(article.id, headers).then(() => {
       toggleModal();
       setIsDeleting(false);
       navigate(`/`);
@@ -72,7 +74,7 @@ export const ArticleCard = ({ article, id }) => {
     });
   };
 
-  const isInAriclePage = location.pathname.slice(-2) == article.id;
+  const isInAriclePage = location.pathname.slice(-2) === article.id.toString();
 
   return (
     <Card className="m-2">
@@ -169,7 +171,7 @@ export const ArticleCard = ({ article, id }) => {
             ))}
           </div>
         </div>
-        <ReactMarkdownMemo
+        <AppReactMarkdown
           children={collapsed ? article.body : body}
           imgFunc={({ node, src, ...props }) => {
             return (

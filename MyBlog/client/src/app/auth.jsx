@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import ErrorPage from "./pages/ErrorPage";
+import ErrorPage from "../pages/ErrorPage";
+import { Outlet } from "react-router-dom";
+import { api } from "./api";
 
 const AuthContext = createContext(null);
 
@@ -31,17 +33,8 @@ export const AuthProvider = ({ children }) => {
     setIsLoading,
     toggleLoginModal
   ) => {
-    fetch(`/api/authenticate/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username,
-        password,
-      }),
-      cache: "default",
-    })
+    api.account
+      .login(username, password)
       .then((resp) => {
         if (resp.status === 200) {
           return resp.json();
@@ -93,10 +86,10 @@ export const useAuth = () => {
   return useContext(AuthContext);
 };
 
-export const Authorization = ({ children }) => {
+export const Authorization = () => {
   const { user } = useAuth();
   return user.isAdmin ? (
-    children
+    <Outlet />
   ) : (
     <ErrorPage message="Unauthorized. Please Login as admin." />
   );

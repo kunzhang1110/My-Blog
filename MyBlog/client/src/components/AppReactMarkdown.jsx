@@ -7,7 +7,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeKatex from "rehype-katex";
 import { Table } from "reactstrap";
 
-export const ReactMarkdownMemo = ({ children, imgFunc, className, deps }) =>
+export const AppReactMarkdown = ({ children, imgFunc, className }) =>
   useMemo(
     () => (
       <ReactMarkdown
@@ -17,14 +17,24 @@ export const ReactMarkdownMemo = ({ children, imgFunc, className, deps }) =>
         remarkRehypeOptions={{ allowDangerousHtml: true }}
         rehypePlugins={[rehypeHighlight, rehypeKatex, rehypeRaw]}
         components={{
-          h1: ({ node, ...props }) => (
+          h2: ({ node, ...props }) => (
             <>
-              <h1 className="mt-4" {...props}></h1>
+              <h2 className="mt-4" {...props}>
+                {node.children[0].value}
+              </h2>
               <hr />
             </>
           ),
-          h2: ({ node, ...props }) => <h2 className="mt-3" {...props}></h2>,
-          h3: ({ node, ...props }) => <h3 className="mt-3" {...props}></h3>,
+          h3: ({ node, ...props }) => (
+            <h3 className="mt-3" {...props}>
+              {node.children[0].value}
+            </h3>
+          ),
+          h4: ({ node, ...props }) => (
+            <h4 className="mt-3" {...props}>
+              {node.children[0].value}
+            </h4>
+          ),
           table: ({ node, ...props }) => (
             <Table bordered hover className="m-2" {...props}></Table>
           ),
@@ -39,5 +49,5 @@ export const ReactMarkdownMemo = ({ children, imgFunc, className, deps }) =>
         }}
       />
     ),
-    deps
+    [children, className, imgFunc]
   );

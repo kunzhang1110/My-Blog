@@ -9,7 +9,7 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { SiGithub, SiTwitter, SiZhihu } from "react-icons/si";
-import { useAuth } from "../Auth";
+import { useAuth } from "../app/auth.jsx";
 
 export const SideBar = ({ setIsAlertOpen }) => {
   const { user } = useAuth();
@@ -20,7 +20,7 @@ export const SideBar = ({ setIsAlertOpen }) => {
   };
 
   return (
-    <div className="Sidebar">
+    <div className="sidebar">
       <Card className="m-2">
         <CardBody className="text-center">
           <img
@@ -80,6 +80,7 @@ const LinkButton = ({ Icon, href }) => {
       style={{ fontSize: "1.5rem" }}
       href={href}
       target="_blank"
+      rel="noreferrer"
     >
       <Icon />
     </a>

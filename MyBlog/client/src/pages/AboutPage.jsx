@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Row, Col, Card, CardBody } from "reactstrap";
+import { AppBreadCrumb } from "../components/AppBreadCrumb";
 
 export const AboutPage = () => {
   useEffect(() => {
@@ -14,6 +15,7 @@ export const AboutPage = () => {
           size: 10,
         }}
       >
+        <AppBreadCrumb />
         <Card className="m-2">
           <CardBody className="m-3">
             <Row>
@@ -46,6 +48,7 @@ export const AboutPage = () => {
                   className="ms-1"
                   href="https://github.com/kunzhang1110"
                   target="_blank"
+                  rel="noreferrer"
                 >
                   https://github.com/kunzhang1110
                 </a>

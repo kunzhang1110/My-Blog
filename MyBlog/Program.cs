@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using MyBlog.Models.Security;
+using MyBlog.Models.Account;
 using Microsoft.OpenApi.Models;
 using My_Blog.Data;
 using My_Blog.Services;

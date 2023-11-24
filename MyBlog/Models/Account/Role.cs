@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace MyBlog.Models.Security
+namespace MyBlog.Models.Account
 {
     /// <summary>
     /// Role Class for ASP.NET Identity

@@ -13,15 +13,17 @@ import {
 } from "reactstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { useAuth } from "../Auth";
+import { useAuth } from "../app/auth.jsx";
 import {
   DEFAULT_INPUT,
   validateInput,
   InputWithValidation,
 } from "../components/InputWithValidation";
-import { ReactMarkdownMemo } from "../components/ReactMarkdownMemo";
+import { AppReactMarkdown } from "../components/AppReactMarkdown.jsx";
 import { Spinner } from "../components/Spinner";
 import { Tag } from "../components/Tag";
+import { AppBreadCrumb } from "../components/AppBreadCrumb.jsx";
+import { api } from "../app/api.jsx";
 
 /** Create and update articles. If address contains id, then update; otherwise, create.
  * Use live markdown preview currently, bodyPreview is not in use. Live preview uses more browser resources*/
@@ -156,19 +158,12 @@ export const ArticleEditPage = () => {
 
       if (id) {
         article["id"] = id;
-        fetch(` /api/articles/${id}`, {
-          method: "PUT",
-          body: formData,
-          headers,
-          cache: "default",
-        }).then(() => navigate(`/articles/${id}`));
+        api.articles
+          .updateArticle(formData, id, headers)
+          .then(() => navigate(`/articles/${id}`));
       } else {
-        fetch(` /api/articles`, {
-          method: "POST",
-          body: formData,
-          headers,
-          cache: "default",
-        })
+        api.articles
+          .createArticle(formData, headers)
           .then((resp) => resp.json())
           .then((data) => {
             console.log(data);
@@ -235,8 +230,8 @@ export const ArticleEditPage = () => {
     let imageUrls = [];
     if (id) {
       setIsLoading(true);
-      fetch(`/api/articles/${id}`)
-        .then((res) => res.json())
+      api.articles
+        .getArticle(id)
         .then((data) => {
           setTitle((t) => ({ ...t, text: data.title }));
           setBody((b) => ({ ...b, text: data.body.replaceAll(/\r/g, "") }));
@@ -303,6 +298,7 @@ export const ArticleEditPage = () => {
               size: 10,
             }}
           >
+            <AppBreadCrumb />
             {isLoading ? (
               <Spinner fullPage />
             ) : (
@@ -409,7 +405,7 @@ export const ArticleEditPage = () => {
                     </Col>
                     <Col md={6}>
                       <div className="article-edit-preview p-2">
-                        <ReactMarkdownMemo
+                        <AppReactMarkdown
                           children={body.text}
                           imgFunc={({ node, src, ...props }) => {
                             let altText = "";
@@ -432,7 +428,6 @@ export const ArticleEditPage = () => {
                               />
                             );
                           }}
-                          deps={[body, images]}
                         />
                       </div>
                     </Col>

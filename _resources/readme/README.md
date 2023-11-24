@@ -1,62 +1,50 @@
 # My Blog
 
-This repository contains the source code for my personal blog. The blog
-application allows users to write, post and manages articles. A new
-article can be created either by writing it directly in Markdown format,
-or by uploading an existing Markdown file. A Markdown preview is
-provided alongside with the markdown input, making it easier for users
-to write or edit. Markdown images syntax is supported so that users can
-upload a Markdown file with accompanied images together.
+This repository contains the source code for my personal blog, which
+uses ASP.NET Core as backend and React.js as frontend. The blog allows
+users to create an article writing it directly on the web page in
+Markdown format, or by uploading an existing Markdown file. Access the
+website at <https://myblog20230101.azurewebsites.net/>
 
 <img src="_readme/media/image1.png" style="width:7in;height:3.83056in"
 alt="Graphical user interface, application, email Description automatically generated" />
-
-The blog is developed with React as frontend and ASP.NET Core as
-backend.
 
 ## Getting Started
 
 Clone the repository and run in development mode in Visual Studio.
 
+### Testing Accounts
+
+Use the following accounts to log in. An administrator user can create
+or update products while a normal user cannot.
+
+| **Username** | **Email**   | **Password** | **Role**      |
+|--------------|-------------|--------------|---------------|
+| a            | a@a.com     | Zk000000!    | User          |
+| admin        | admin@a.com | Zk000000!    | Administrator |
+
 ## Description
 
 ### Create and Edit Articles
 
-To create or edit an article, a user can follow the steps below:
+To easily create or edit an article, a user can follow the steps below:
 
 1.  Log into the application and go to Create or Edit page.
 
-2.  Drag Markdown file and images folder together and drop onto the
+2.  Drag Markdown file AND images folder together and drop onto the
     page.
 
 > <img src="_readme/media/image2.png"
-> style="width:6.08941in;height:3.2803in"
+> style="width:5.69128in;height:3.06584in"
 > alt="Graphical user interface, application Description automatically generated" />
 
-3.  When texts and images are uploaded, add tags if required.
+3.  When texts and images are uploaded, click an image’s names, the
+    corresponding markdown for inserting the image will be copied onto
+    users’ clipboard.
 
 <img src="_readme/media/image3.png"
-style="width:6.14813in;height:3.66448in"
+style="width:5.41777in;height:3.22916in"
 alt="Graphical user interface, text, application Description automatically generated" />
-
-4.  Check if images are well-displayed, add/change images if required.
-
-<img src="_readme/media/image4.png"
-style="width:6.32508in;height:3.6639in" />
-
-5.  Post the article.
-
-It may come handy to use *pandoc* to convert articles in .docx to .md
-and extract embedded images. An example of pandoc command can be:
-
-    pandoc ./README.docx –to=gfm -o README.md –extract-media=_readme
-
-Note:
-
-- Users can download written markdown text by clicking “Save” button.
-
-- Clicking image names copy image name in markdown format, such as
-  `![example_1]( example_1.png), `to clipboard.
 
 ### Markdown Format
 
@@ -64,12 +52,12 @@ GitHub Flavored Markdown (gfm) is chosen as the dialect for Markdown
 format. Code snippets, math equations and raw html tags are also
 supported.
 
-### Security
-
-A user needs to be logged in as administrator to be able to perform CRUD
-operations.
-
 ### Other Features
+
+- Users can download written markdown text by clicking “Save” button.
+
+- Clicking image names copy image name in markdown format, such as
+  `![example_1]( example_1.png), `to clipboard.
 
 - Abstract of articles are loaded and displayed initially, full articles
   can be fetched and displayed by clicking “more” button. The full
@@ -81,15 +69,22 @@ operations.
 
 - Users can choose to be “stayed logged in.”
 
-## 
+## Technologies Used
 
-Technologies Used
+Backend - ASP.NET Core
 
-- React 17.0.2
+Frontend - React Typescript with
 
-- ASP.NET Core 6.0.13
+- react-dropzone
 
-- .NET Packages: ASP.NET Core Identity, EF Core, etc.
+- react-markdown
 
-- React Packages: react-markdown, react-icons, react-router, rectstrap,
-  remark, rehype, etc.
+- React Router
+
+- reactstrap
+
+- rehype
+
+- remark
+
+- highlight.js

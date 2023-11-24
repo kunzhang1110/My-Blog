@@ -7,6 +7,7 @@ import {
   InputWithValidation,
 } from "../components/InputWithValidation";
 import { Spinner } from "../components/Spinner";
+import { api } from "../app/api";
 
 export const RegisterPage = () => {
   const [usernameInput, setUsernameInput] = useState(DEFAULT_INPUT);
@@ -24,23 +25,14 @@ export const RegisterPage = () => {
       password: passwordInput.text,
     };
 
-    fetch(`/api/authenticate/register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-      cache: "default",
-    })
-      .then((resp) => resp.json())
-      .then((resp) => {
-        if (resp.status === "Success") {
-          navigate("/");
-        } else {
-          setMessage(resp.message);
-        }
-        setIsLoading(false);
-      });
+    api.account.register(user).then((resp) => {
+      if (resp.status === "Success") {
+        navigate("/");
+      } else {
+        setMessage(resp.message);
+      }
+      setIsLoading(false);
+    });
   };
   const validateRegisterInputs = () => {
     return (

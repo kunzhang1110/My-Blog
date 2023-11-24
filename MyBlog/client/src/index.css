@@ -1,10 +1,12 @@
 :root {
   --articleEditTextAreaHeight: 70vh;
+  --background-color: #f6f6f6;
+  --side-bar-sticky-top-position: 82px;
 }
 
 body {
   height: 100%;
-  background-color: #f6f6f6;
+  background-color: var(--background-color);
 }
 
 textarea {
@@ -23,6 +25,14 @@ textarea {
   height: var(--articleEditTextAreaHeight);
   background-color: #ffffff;
   overflow: scroll;
+}
+
+.page-breadbrumb {
+  position: sticky;
+  top: calc(var(--side-bar-sticky-top-position) - 20px);
+  z-index: 1019;
+  background-color: var(--background-color);
+  padding: 20px 0 5px 0;
 }
 
 .btn-loading {
@@ -114,15 +124,9 @@ textarea {
   margin-right: 1.5rem;
 }
 
-.Sidebar {
+.sidebar {
   position: sticky;
-  top: 82px;
-}
-
-.ScrollUpArrow {
-  position: fixed;
-  bottom: 10px;
-  right: 5vw;
+  top: var(--side-bar-sticky-top-position);
 }
 
 #email {

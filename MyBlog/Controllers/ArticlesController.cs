@@ -4,9 +4,15 @@ using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 using System.Text.RegularExpressions;
 using MyBlog.Models.Articles;
-using MyBlog.Models.Security;
+using MyBlog.Models.Account;
 using My_Blog.Data;
 using My_Blog.Services;
+using My_Blog.Models.Articles;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Linq;
+using My_Blog.Utils;
+using Microsoft.CodeAnalysis;
+using System.Text.Json;
 
 namespace MyBlog.Controllers
 {
@@ -15,21 +21,15 @@ namespace MyBlog.Controllers
     public class ArticlesController : ControllerBase
     {
         private readonly MyBlogContext _context;
-        private readonly ILogger _logger;
-        private readonly string _imageDirectory;
         private readonly ImageService _imageService;
 
 
-        public ArticlesController(MyBlogContext context, ImageService imageService, ILogger<ArticlesController> logger)
+        public ArticlesController(MyBlogContext context, ImageService imageService)
         {
             _context = context;
-            _logger = logger;
+            //_logger = logger;
             _imageService = imageService;
-            _imageDirectory = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "UserData");
         }
-
-
-
 
         /// <summary>
         /// Get summary (anything before the first ## in a markdown file) of an article.
@@ -101,15 +101,36 @@ namespace MyBlog.Controllers
         /// Get a list of of article summaries.
         /// </summary>
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticles()
+        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticles([FromQuery] ArticleParams articleParams)
         {
             var articleSummaryDtos = new List<ArticleDto>();
-            var articles = await _context.Articles
+
+            var query = _context.Articles
                 .Include(a => a.ArticleTags)
                 .ThenInclude(at => at.Tag)
-                .ToListAsync();
+                .AsQueryable();
 
-            foreach (var article in articles)
+            if (!string.IsNullOrEmpty(articleParams.OrderBy))
+            {
+                query = articleParams.OrderBy switch
+                {
+                    "dateAsc" => query.OrderBy(a => a.Date),
+                    "dateDesc" => query.OrderByDescending(p => p.Date),
+                    _ => query.OrderBy(a => a.Date)
+                };
+            }
+
+
+            if (!string.IsNullOrEmpty(articleParams.CategoryName))
+            {
+                query = query.Where(a => a.ArticleTags.Any(at => at.Tag != null && at.Tag.Name == articleParams.CategoryName));
+
+            }
+
+
+            var articlesPageList = await PagedList<Article>.ToPagedList(query, articleParams.PageNumber, articleParams.PageSize);
+
+            foreach (var article in articlesPageList)
             {
                 articleSummaryDtos.Add(
                     new ArticleDto
@@ -123,10 +144,24 @@ namespace MyBlog.Controllers
                     });
             }
 
+            //add pagination to header
+            var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+            Response.Headers.Add("Pagination", System.Text.Json.JsonSerializer.Serialize(new
+            {
+                articlesPageList.CurrentPage,
+                articlesPageList.TotalPages,
+                articlesPageList.PageSize,
+                articlesPageList.TotalCount,
+
+            }, options)); ;
+            Response.Headers.Add("Access-Control-Expose-Headers", "Pagination"); //expose header to cross-domain client
+
             return articleSummaryDtos;
         }
 
-
+        /// <summary>
+        /// Get an article by Id
+        /// </summary>
         [HttpGet("{id}")]
         public async Task<ActionResult<ArticleDto>> GetArticle(int id)
         {

@@ -14,7 +14,7 @@ import {
   NavLink,
 } from "reactstrap";
 import { Link, NavLink as RRNavLink } from "react-router-dom";
-import { useAuth } from "../Auth";
+import { useAuth } from "../app/auth.jsx";
 import { UserLogin } from "./UserLogin";
 
 export const NavMenu = () => {
@@ -33,7 +33,7 @@ export const NavMenu = () => {
 
   return (
     <Navbar
-      className="navbar-expand-sm navbar-toggleable-sm  ng-white border-bottom box-shadow mb-3 px-5"
+      className="navbar-expand-sm navbar-toggleable-sm  ng-white border-bottom box-shadow px-5"
       color="black"
       dark
       container="fluid"

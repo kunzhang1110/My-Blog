@@ -18,5 +18,7 @@ namespace MyBlog.Models.Articles
         public int? Views { get; set; }
 
         public virtual ICollection<ArticleTag> ArticleTags { get; set; }
+
+
     }
 }
