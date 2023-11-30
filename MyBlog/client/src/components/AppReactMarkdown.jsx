@@ -7,7 +7,13 @@ import rehypeRaw from "rehype-raw";
 import rehypeKatex from "rehype-katex";
 import { Table } from "reactstrap";
 
-export const AppReactMarkdown = ({ children, imgFunc, className }) =>
+/**
+ * Memo wrapper of ReactMarkdown.
+ * @param {string} children - markdown text.
+ * @param {string} className - css class name.
+ * @param {string} imgFunc - a function that determines how images should render.
+ */
+export const AppReactMarkdown = ({ children, className, imgFunc }) =>
   useMemo(
     () => (
       <ReactMarkdown

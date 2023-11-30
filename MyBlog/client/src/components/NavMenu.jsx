@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Collapse,
   Dropdown,
@@ -16,13 +16,21 @@ import {
 import { Link, NavLink as RRNavLink } from "react-router-dom";
 import { useAuth } from "../app/auth.jsx";
 import { UserLogin } from "./UserLogin";
+import { api } from "../app/api.jsx";
 
 export const NavMenu = () => {
+  const [categories, setCategories] = useState([]);
   const [collapsed, setCollapsed] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isDropDownOpen, setIsDropdownOpen] = useState(false);
 
   const { user, logout, setMessage } = useAuth();
+
+  useEffect(() => {
+    api.articles.getCategories().then((tags) => {
+      setCategories(tags);
+    });
+  }, []);
 
   const toggleLoginModal = () => {
     if (isLoginModalOpen) {
@@ -63,6 +71,18 @@ export const NavMenu = () => {
               Home
             </NavLink>
           </NavItem>
+          {categories.map((category) => (
+            <NavItem key={category.name}>
+              <NavLink
+                tag={RRNavLink}
+                to={`articles/categories/${category.name}`}
+                id={category}
+                end
+              >
+                {category.name}
+              </NavLink>
+            </NavItem>
+          ))}
           <NavItem>
             <NavLink tag={RRNavLink} to="/about" id="About">
               About

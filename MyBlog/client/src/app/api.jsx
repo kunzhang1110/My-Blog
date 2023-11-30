@@ -59,6 +59,11 @@ const articles = {
       method: "DELETE",
       headers,
     }),
+
+  getCategories: (n = 3) =>
+    fetch(`/api/articles/categories/${n}`, {
+      method: "GET",
+    }).then((res) => res.json()),
 };
 
 export const api = {

@@ -73,18 +73,16 @@ supported.
 
 Backend - ASP.NET Core
 
-Frontend - React Typescript with
-
-- react-dropzone
-
-- react-markdown
-
-- React Router
+Frontend - React
 
 - reactstrap
 
-- rehype
+- react-dropzone
 
-- remark
+- React Router
 
-- highlight.js
+- react-markdown
+
+- remark: transform markdown format to HTML
+
+- rehype: transform origin HTML to modified HTML

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Alert, Col, Row } from "reactstrap";
 import { useParams } from "react-router-dom";
 import { ArticleCard } from "../components/ArticleCard";
@@ -16,27 +16,31 @@ export const ArticlesListPage = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const { category } = useParams();
 
-  const updateData = async (pageNumber = 1) => {
-    setIsLoading(true);
-    let response = await api.articles.getArticles(category, pageNumber);
-    setArticlesList(await response.json());
-    setPaginationData(JSON.parse(response.headers.get("Pagination")));
-    setIsLoading(false);
-  };
-
-  useEffect(async () => {
-    document.title = "Kun's Blog - " + (category ? category : "Home");
-    await updateData();
-  }, [category]);
+  const updateData = useCallback(
+    async (pageNumber = 1) => {
+      setIsLoading(true);
+      let response = await api.articles.getArticles(category, pageNumber);
+      setArticlesList(await response.json());
+      setPaginationData(JSON.parse(response.headers.get("Pagination")));
+      setIsLoading(false);
+    },
+    [category]
+  );
 
   useEffect(() => {
-    console.log(paginationData);
+    document.title = "Kun's Blog - " + (category ? category : "Home");
+    updateData().catch((err) => {
+      console.log(err);
+    });
+  }, [category, updateData]);
+
+  useEffect(() => {
     if (isAlertOpen) {
       setTimeout(() => {
         setIsAlertOpen(false);
       }, 2000); //turn off alert in 2s
     }
-  }, [isAlertOpen]);
+  }, [isAlertOpen, paginationData]);
 
   return (
     <>
@@ -87,7 +91,6 @@ export const ArticlesListPage = () => {
           <Alert color="info" isOpen={isAlertOpen} className="alert-top">
             Email Address Copied!
           </Alert>
-          MAp
         </>
       )}
     </>

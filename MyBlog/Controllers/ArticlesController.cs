@@ -170,10 +170,7 @@ namespace MyBlog.Controllers
                 .ThenInclude(at => at.Tag)
                 .Where(a => a.Id == id).FirstOrDefaultAsync();
 
-            if (article == null)
-            {
-                return NotFound();
-            }
+            if (article == null) return NotFound();
 
             // Add one view
             article.Views++;
@@ -192,6 +189,22 @@ namespace MyBlog.Controllers
                 Tags = article.ArticleTags.Select(at => at.Tag).ToList(),
                 ImageUrls = imageUrls.Count > 0 ? imageUrls : null
             };
+        }
+
+        /// <summary>
+        /// Get n tags order by number of usages by articles
+        /// </summary>
+
+        [HttpGet("Categories/{n}")]
+        public async Task<ActionResult<IEnumerable<Tag?>>> GetCategories(int n)
+        {
+            return await _context.ArticleTags
+                .GroupBy(at => at.TagId)
+                .Select(g => new { Id = g.Key, Count = g.Count() })
+                .OrderByDescending(g => g.Count)
+                .Take(n)
+                .Select(g => _context.Tags.SingleOrDefault(t => t.Id == g.Id))
+                .ToListAsync();
         }
 
 
