@@ -25,13 +25,18 @@ export const DEFAULT_INPUT = {
   isInvalid: false,
 };
 
-export const validateInput = (input, inputType, setInput) => {
+export const validateInput = (
+  input,
+  setInput,
+  inputType = "",
+  invalidText = ""
+) => {
   if (input.text === "") {
     //check if input is blank
     setInput({
       ...input,
       isInvalid: true,
-      invalidText: `${_captalize(inputType)} cannot be blank`,
+      invalidText: invalidText ?? `${_captalize(inputType)} cannot be blank`,
     });
     return false;
   }
@@ -61,6 +66,8 @@ export const InputWithValidation = ({
   inputType,
   setInput,
   hasHiddenLabel = false,
+  style,
+  placeholderText,
 }) => {
   return (
     <FormGroup>
@@ -70,7 +77,7 @@ export const InputWithValidation = ({
       <Input
         name={inputType}
         value={input.text}
-        placeholder={_captalize(inputType)}
+        placeholder={placeholderText ?? _captalize(inputType)}
         invalid={input.isInvalid}
         type={inputType}
         onChange={(e) => {
@@ -81,6 +88,7 @@ export const InputWithValidation = ({
             invalidText: "",
           });
         }}
+        style={style}
       />
       <FormFeedback>{input.invalidText}</FormFeedback>
     </FormGroup>

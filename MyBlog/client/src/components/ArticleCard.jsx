@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Row,
@@ -12,31 +12,40 @@ import {
   Modal,
   ModalHeader,
   ModalFooter,
+  ButtonGroup,
 } from "reactstrap";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { VscEllipsis } from "react-icons/vsc";
-import { GoEye } from "react-icons/go";
+import { GoEye, GoComment, GoThumbsup } from "react-icons/go";
 import { MdDateRange } from "react-icons/md";
 import { useAuth } from "../app/auth.jsx";
 import { Spinner } from "./Spinner";
 import { Tag } from "./Tag";
 import { AppReactMarkdown } from "./AppReactMarkdown.jsx";
 import { api } from "../app/api.jsx";
+import { CommentsList } from "./CommentsList.jsx";
 
 //React Markdown common components
 export const rmComponents = {};
 
-export const ArticleCard = ({ article, id }) => {
+export const ArticleCard = ({ article }) => {
   const imageDirectory = `UserData/${article.id}`;
   const [collapsed, setCollapsed] = useState(true);
   const [body, setBody] = useState("");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCommentOpen, setIsCommentOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
+  const { pageNumber, id } = useParams();
   const { user } = useAuth();
+
+  const isInAriclePage = id ?? false;
+
+  useEffect(() => {
+    setIsCommentOpen(isInAriclePage);
+  }, []);
 
   const toggleArticleCard = (e) => {
     e.preventDefault();
@@ -62,19 +71,14 @@ export const ArticleCard = ({ article, id }) => {
   const toggleModal = () => setIsModalOpen((prev) => !prev);
 
   const deleteArticle = () => {
-    const headers = new Headers({
-      Authorization: `Bearer ${user.token}`,
-    });
     setIsDeleting(true);
-    api.articles.deleteArticle(article.id, headers).then(() => {
+    api.articles.deleteArticle(article.id, user.header).then(() => {
       toggleModal();
       setIsDeleting(false);
-      navigate(`/`);
+      if (pageNumber !== null) navigate(`/articles/page/${pageNumber}`);
       navigate(0); //refresh page
     });
   };
-
-  const isInAriclePage = location.pathname.slice(-2) === article.id.toString();
 
   return (
     <Card className="m-2">
@@ -202,6 +206,39 @@ export const ArticleCard = ({ article, id }) => {
             </Link>
           </Row>
         )}
+        <ButtonGroup style={{ marginTop: "15px" }}>
+          <Button
+            color="transparent"
+            onClick={() => setIsCommentOpen(!isCommentOpen)}
+            tag="span"
+            style={{ paddingLeft: "0px" }}
+          >
+            <GoComment
+              style={{ marginRight: "8px", height: "20px", width: "20px" }}
+            />
+            Comments
+          </Button>
+          <div
+            style={{
+              borderLeft: "1px solid grey",
+              height: "20px",
+              marginTop: "10px",
+              marginRight: "10px",
+            }}
+          ></div>
+          <Button color="transparent" tag="span">
+            <GoThumbsup
+              style={{
+                marginRight: "8px",
+                height: "20px",
+                width: "20px",
+                marginBottom: "5px",
+              }}
+            />{" "}
+            Like
+          </Button>
+        </ButtonGroup>
+        {isCommentOpen ? <CommentsList articleId={article.id} /> : <></>}
       </CardBody>
     </Card>
   );

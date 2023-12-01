@@ -1,8 +1,11 @@
 import React from "react";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
 import { Row, Col } from "reactstrap";
+import { useLocation } from "react-router-dom";
 
 export default function ErrorPage({ message }) {
+  const { state } = useLocation();
+
   return (
     <>
       <Row>
@@ -20,7 +23,7 @@ export default function ErrorPage({ message }) {
             className="d-flex justify-content-center align-items-center"
             style={{ height: "90vh" }}
           >
-            <h1>{message}</h1>
+            <h1>{state.message ?? message}</h1>
           </div>
         </Col>
       </Row>

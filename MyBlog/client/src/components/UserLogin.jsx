@@ -10,7 +10,7 @@ import { Spinner } from "./Spinner";
 import { useNavigate } from "react-router-dom";
 
 export const UserLogin = ({ toggleLoginModal }) => {
-  const [usernameInput, setUsernameInput] = useState(DEFAULT_INPUT);
+  const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);
   const [passwordInput, setPasswordInput] = useState(DEFAULT_INPUT);
   const [isRemembered, setIsRemembered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,7 +18,7 @@ export const UserLogin = ({ toggleLoginModal }) => {
   const { user, login, message } = useAuth();
 
   useEffect(() => {
-    if (user.username === "") {
+    if (user.userName === "") {
       setIsRemembered(false);
     }
   }, [user]);
@@ -26,12 +26,12 @@ export const UserLogin = ({ toggleLoginModal }) => {
   const loginHandler = (e) => {
     e.preventDefault();
     if (
-      validateInput(usernameInput, "username", setUsernameInput) &&
+      validateInput(userNameInput, "username", setUserNameInput) &&
       validateInput(passwordInput, "password", setPasswordInput)
     ) {
       setIsLoading(true);
       login(
-        usernameInput.text,
+        userNameInput.text,
         passwordInput.text,
         isRemembered,
         setIsLoading,
@@ -43,9 +43,9 @@ export const UserLogin = ({ toggleLoginModal }) => {
   return (
     <Form>
       <InputWithValidation
-        input={usernameInput}
+        input={userNameInput}
         inputType={"username"}
-        setInput={setUsernameInput}
+        setInput={setUserNameInput}
       />
 
       <InputWithValidation

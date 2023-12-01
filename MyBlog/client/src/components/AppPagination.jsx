@@ -1,72 +1,45 @@
-import { useState } from "react";
 import { Pagination, PaginationItem, PaginationLink } from "reactstrap";
+import { Link } from "react-router-dom";
 
-export const AppPagination = ({ paginationData, handlePageChange }) => {
+export const AppPagination = ({ paginationData, category }) => {
   const { pageSize, currentPage, totalCount, totalPages } = paginationData;
-  const [pageNumber, setPageNumber] = useState(currentPage);
 
-  const handleClick = (e) => {
-    let buttonValue = e.target.value ?? 1;
-    setPageNumber(buttonValue);
-    handlePageChange(buttonValue);
-  };
+  const getToURL = (pageNumber) =>
+    "/articles" +
+    (category ? `/categories/${category}` : "") +
+    `?pageNumber=${pageNumber}`;
 
   return (
     <div style={{ marginLeft: "8px" }}>
       <Pagination>
-        <PaginationItem disabled={pageNumber === 1}>
-          <PaginationLink
-            tag="button"
-            value={1}
-            first
-            onClick={(e) => {
-              handleClick(e);
-            }}
-          />
+        <PaginationItem disabled={currentPage === 1}>
+          <PaginationLink tag={Link} first to={getToURL(1)} />
         </PaginationItem>
-        <PaginationItem disabled={pageNumber === 1}>
+        <PaginationItem disabled={currentPage === 1}>
           <PaginationLink
-            tag="button"
-            value={pageNumber > 1 ? pageNumber - 1 : 1}
+            tag={Link}
             previous
-            onClick={(e) => {
-              handleClick(e);
-            }}
+            to={getToURL(currentPage > 1 ? currentPage - 1 : 1)}
           />
         </PaginationItem>
         {Array.from(Array(totalPages), (_, index) => index + 1).map((n) => (
           <PaginationItem key={n} disabled={n === currentPage}>
-            <PaginationLink
-              tag="button"
-              value={n}
-              onClick={(e) => {
-                handleClick(e);
-              }}
-            >
+            <PaginationLink tag={Link} to={getToURL(n)}>
               {n}
             </PaginationLink>
           </PaginationItem>
         ))}
-        <PaginationItem disabled={pageNumber === totalPages}>
+        <PaginationItem disabled={currentPage === totalPages}>
           <PaginationLink
-            tag="button"
-            value={pageNumber < totalPages ? pageNumber + 1 : totalPages}
+            tag={Link}
+            to={getToURL(
+              currentPage < totalPages ? currentPage + 1 : totalPages
+            )}
             next
-            onClick={(e) => {
-              handleClick(e);
-            }}
           />
         </PaginationItem>
-        <PaginationItem disabled={pageNumber === totalPages}>
-          <PaginationLink
-            tag="button"
-            value={totalPages}
-            last
-            onClick={(e) => {
-              console.log(e.target.value);
-              handleClick(e);
-            }}
-          />
+        <PaginationItem disabled={currentPage === totalPages}>
+          <PaginationLink tag={Link} last to={getToURL(totalPages)} />
         </PaginationItem>
       </Pagination>
       <p>

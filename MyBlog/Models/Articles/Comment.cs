@@ -1,13 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
-using MyBlog.Models.Account;
+﻿using MyBlog.Models.Account;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace MyBlog.Models.Articles
 {
     [Table("MyBlogComments")]
-    public class Comment
+    public class Comment: IContent
     {
         public int Id { get; set; }
         public int ArticleId { get; set; }

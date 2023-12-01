@@ -1,6 +1,6 @@
 ﻿namespace My_Blog.Models.Articles
 {
-    public class ArticleParams
+    public class PageParams
     {
         private const int MaxPageSize = 50;
         private int _pageSize = 5;

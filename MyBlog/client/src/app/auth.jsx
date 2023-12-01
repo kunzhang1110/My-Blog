@@ -7,7 +7,7 @@ const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({
-    username: "",
+    userName: "",
     permissions: [],
     token: "",
     isAdmin: false,
@@ -27,14 +27,14 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = (
-    username,
+    userName,
     password,
     isRemembered,
     setIsLoading,
     toggleLoginModal
   ) => {
     api.account
-      .login(username, password)
+      .login(userName, password)
       .then((resp) => {
         if (resp.status === 200) {
           return resp.json();
@@ -51,13 +51,16 @@ export const AuthProvider = ({ children }) => {
           throw new Error(errorMessage);
         }
       })
-      .then((resp) => {
-        if (resp) {
-          resp["isAdmin"] = resp.roles.includes("Admin");
-          setUser(resp);
+      .then((data) => {
+        if (data) {
+          data["isAdmin"] = data.roles.includes("Admin");
+          data["authorizationHeader"] = {
+            Authorization: `Bearer ${data.token}`,
+          };
+          setUser(data);
           if (isRemembered) {
             //if "Rembmer Me" radio box is ticked
-            localStorage.setItem("storedUser", JSON.stringify(resp));
+            localStorage.setItem("storedUser", JSON.stringify(data));
           }
         }
       })
@@ -71,7 +74,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
-    setUser({ username: "", permissions: [] });
+    setUser({ userName: "", permissions: [] });
     localStorage.removeItem("storedUser");
   };
 

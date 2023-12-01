@@ -90,7 +90,7 @@ export const NavMenu = () => {
           </NavItem>
 
           <NavItem>
-            {user.username !== "" ? (
+            {user.userName !== "" ? (
               <Dropdown
                 isOpen={isDropDownOpen}
                 toggle={() => setIsDropdownOpen((prev) => !prev)}
@@ -98,7 +98,7 @@ export const NavMenu = () => {
                 <DropdownToggle tag="span">
                   <div className="navbar-nav">
                     <NavLink tag={RRNavLink} to="#">
-                      {user.username}
+                      {user.userName}
                     </NavLink>
                   </div>
                 </DropdownToggle>
@@ -133,7 +133,7 @@ export const NavMenu = () => {
             </Modal>
           </NavItem>
           <NavItem>
-            {user.username === "" ? (
+            {user.userName === "" ? (
               <NavLink tag={RRNavLink} to="/register" end>
                 Register
               </NavLink>

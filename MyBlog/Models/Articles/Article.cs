@@ -3,7 +3,7 @@
 namespace MyBlog.Models.Articles
 {
     [Table("MyBlogArticles")]
-    public class Article
+    public class Article: IContent
     {
 
         public int Id { get; set; }
@@ -14,7 +14,5 @@ namespace MyBlog.Models.Articles
 
         public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
         public virtual ICollection<ArticleTag> ArticleTags { get; set; } = new HashSet<ArticleTag>();
-
-
     }
 }

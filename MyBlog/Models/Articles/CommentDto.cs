@@ -8,7 +8,8 @@ namespace MyBlog.Models.Articles
         public int ArticleId { get; set; }
         public int UserId { get; set; }
 
-        public DateTime? Date { get; set; }
+        public string? UserName { get; set; } = null!;
+        public string? Date { get; set; }
         public string Body { get; set; } = null!;
 
     }

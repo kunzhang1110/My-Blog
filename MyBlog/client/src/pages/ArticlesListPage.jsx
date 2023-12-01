@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, Col, Row } from "reactstrap";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArticleCard } from "../components/ArticleCard";
 import { SideBar } from "../components/SideBar";
 import { Spinner } from "../components/Spinner";
@@ -15,24 +15,34 @@ export const ArticlesListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const { category } = useParams();
-
-  const updateData = useCallback(
-    async (pageNumber = 1) => {
-      setIsLoading(true);
-      let response = await api.articles.getArticles(category, pageNumber);
-      setArticlesList(await response.json());
-      setPaginationData(JSON.parse(response.headers.get("Pagination")));
-      setIsLoading(false);
-    },
-    [category]
-  );
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = "Kun's Blog - " + (category ? category : "Home");
-    updateData().catch((err) => {
-      console.log(err);
-    });
-  }, [category, updateData]);
+    setIsLoading(true);
+
+    api.articles
+      .getArticles(category, searchParams.get("pageNumber") ?? 1)
+      .then((resp) => {
+        if (resp.status == "400") {
+          navigate("/error", {
+            state: { message: "Page number exceeds max pages" },
+          });
+
+          return;
+        }
+        setPaginationData(JSON.parse(resp.headers.get("Pagination")));
+        return resp.json();
+      })
+      .then((data) => {
+        setArticlesList(data);
+        setIsLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, [category, searchParams]);
 
   useEffect(() => {
     if (isAlertOpen) {
@@ -76,8 +86,8 @@ export const ArticlesListPage = () => {
                 ))}
               </div>
               <AppPagination
-                handlePageChange={updateData}
                 paginationData={paginationData ?? null}
+                category={category}
               />
             </Col>
             <Col

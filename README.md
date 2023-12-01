@@ -2,9 +2,11 @@
 
 This repository contains the source code for my personal blog, which
 uses ASP.NET Core as backend and React.js as frontend. The blog allows
-users to create an article writing it directly on the web page in
-Markdown format, or by uploading an existing Markdown file. Access the
-website at <https://myblog20230101.azurewebsites.net/>
+users to create new articles in Markdown format with embedded images,
+either by writing it on the web page or uploading existing Markdown file
+through drag and drop.
+
+Access the website at <https://myblog20230101.azurewebsites.net/>
 
 <img src="_readme/media/image1.png" style="width:7in;height:3.83056in"
 alt="Graphical user interface, application, email Description automatically generated" />
@@ -35,7 +37,7 @@ To easily create or edit an article, a user can follow the steps below:
     page.
 
 > <img src="_readme/media/image2.png"
-> style="width:5.69128in;height:3.06584in"
+> style="width:6.30677in;height:3.39739in"
 > alt="Graphical user interface, application Description automatically generated" />
 
 3.  When texts and images are uploaded, click an image’s names, the
@@ -43,8 +45,7 @@ To easily create or edit an article, a user can follow the steps below:
     users’ clipboard.
 
 <img src="_readme/media/image3.png"
-style="width:5.41777in;height:3.22916in"
-alt="Graphical user interface, text, application Description automatically generated" />
+style="width:7in;height:4.56806in" />
 
 ### Markdown Format
 

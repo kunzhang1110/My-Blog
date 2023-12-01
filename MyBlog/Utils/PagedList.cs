@@ -1,22 +1,23 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
+using MyBlog.Models.Articles;
 
 namespace My_Blog.Utils
 {
     public class PagedList<T> : List<T>
 
     {
-        public int CurrentPage { get; set; }
-        public int TotalPages { get; set; }
-        public int PageSize { get; set; }
-        public int TotalCount { get; set; }
+        public PaginationData PaginationData { get; set; }
 
         public PagedList(List<T> items, int totalCount, int pageNumber, int pageSize)
         {
-
-            TotalCount = totalCount;
-            PageSize = pageSize;
-            CurrentPage = pageNumber;
-            TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize);
+            PaginationData = new()
+            {
+                TotalCount = totalCount,
+                PageSize = pageSize,
+                CurrentPage = pageNumber,
+                TotalPages = (int)Math.Ceiling(totalCount / (double)pageSize)
+            };
             AddRange(items);
         }
 

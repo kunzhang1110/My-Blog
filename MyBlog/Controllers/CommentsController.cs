@@ -5,9 +5,13 @@ using MyBlog.Models.Articles;
 using My_Blog.Data;
 using Microsoft.CodeAnalysis;
 using System.Security.Claims;
-using System.Threading.Tasks;
+using System.Xml.Linq;
+using My_Blog.Models.Articles;
+using My_Blog.Utils;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using System.Text.Json;
+using Microsoft.AspNetCore.Identity;
 using MyBlog.Models.Account;
-using My_Blog.Services;
 
 namespace MyBlog.Controllers
 {
@@ -16,13 +20,14 @@ namespace MyBlog.Controllers
     public class CommentsController : ControllerBase
     {
         private readonly MyBlogContext _context;
-
-        public CommentsController(MyBlogContext context)
+        private readonly UserManager<User> _userManager;
+        public CommentsController(MyBlogContext context, UserManager<User> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
-        private ActionResult<Comment>? CheckUser(int id)
+        private ActionResult<CommentDto>? CheckUser(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (userId == null) { return BadRequest(new ProblemDetails { Title = "Cannot find user id" }); }
@@ -30,9 +35,11 @@ namespace MyBlog.Controllers
             return null;
         }
 
-        private async Task<ActionResult<Comment>> UpdateComment(Comment? comment, CommentDto commentDto)
+        private async Task<ActionResult<CommentDto>> UpdateComment(Comment? comment, CommentDto commentDto)
         {
-            var checkUserResult = CheckUser(commentDto.Id);
+
+
+            var checkUserResult = CheckUser(commentDto.UserId);
             if (checkUserResult != null) return checkUserResult;
 
             if (comment != null)
@@ -53,30 +60,31 @@ namespace MyBlog.Controllers
                 _context.Comments.Add(comment);
             }
             var saveChangeResult = await _context.SaveChangesAsync();
-            if (saveChangeResult > 0) return CreatedAtRoute("GetComment", new { comment.Id }, commentDto);
+            if (saveChangeResult > 0) return CreatedAtRoute("GetComment", new { comment.Id }, comment.ToCommentDto());
             return BadRequest(new ProblemDetails { Title = "Problem creating new comment" });
         }
 
         /// <summary>
         /// Get a comment by comment id
         /// </summary>
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Comment?>> GetComment(int id)
+        [HttpGet("{id}", Name = "GetComment")]
+        public async Task<ActionResult<CommentDto?>> GetComment(int id)
         {
-            return await _context.Comments.FindAsync(id);
+            var comment = await _context.Comments.FindAsync(id);
+            return comment == null ? NotFound() : Ok(comment);
         }
 
 
         [Authorize(Roles = "Member, Admin")]
         [HttpPost]
-        public async Task<ActionResult<Comment>> PostComment(CommentDto commentDto)
+        public async Task<ActionResult<CommentDto>> PostComment(CommentDto commentDto)
         {
             return await UpdateComment(null, commentDto);
         }
 
         [Authorize(Roles = "Member, Admin")]
         [HttpPut]
-        public async Task<ActionResult<Comment>> PutComment(CommentDto commentDto)
+        public async Task<ActionResult<CommentDto>> PutComment(CommentDto commentDto)
         {
             var comment = await _context.Comments.FindAsync(commentDto.Id);
             if (comment == null) { return BadRequest(new ProblemDetails { Title = "Cannot find comment in db" }); }
@@ -85,7 +93,7 @@ namespace MyBlog.Controllers
 
         [Authorize(Roles = "Member, Admin")]
         [HttpDelete("{id}")]
-        public async Task<ActionResult<Comment>> DeleteArticle(int id)
+        public async Task<ActionResult<CommentDto>> DeleteArticle(int id)
         {
             var comment = await _context.Comments.FindAsync(id);
             if (comment == null) { return NotFound(); }
@@ -102,10 +110,26 @@ namespace MyBlog.Controllers
         /// <summary>
         /// Get a list of comments for an article by article id
         /// </summary>
-        [HttpGet("GetCommentsByAritcleId/{articleId}")]
-        public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByAritcleId(int articleId)
+        [HttpGet("GetCommentsByArticleId/{articleId}")]
+        public async Task<ActionResult<List<CommentDto>>> GetCommentsByArticleId(int articleId, [FromQuery] PageParams pageParams)
         {
-            return await _context.Comments.Where(comment => comment.ArticleId == articleId).ToListAsync();
+            var query = _context.Comments
+              .Where(comment => comment.ArticleId == articleId)
+              .SortByDate(pageParams.OrderBy)
+              .AsQueryable();
+
+            var comments = await PagedList<Comment>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
+
+            var commentDtos = new List<CommentDto>();
+            foreach (var comment in comments)
+            {
+                var user = await _userManager.FindByIdAsync(comment.UserId.ToString());
+                commentDtos.Add(comment.ToCommentDto(user.UserName));
+            }
+
+            Response.AddPaginationHeader(comments.PaginationData);
+
+            return Ok(commentDtos);
         }
 
         /// <summary>
@@ -114,7 +138,8 @@ namespace MyBlog.Controllers
         [HttpGet("GetCommentsByUserId/{userId}")]
         public async Task<ActionResult<IEnumerable<Comment>>> GetCommentsByUserId(int userId)
         {
-            return await _context.Comments.Where(comment => comment.UserId == userId).ToListAsync();
+            var comments = await _context.Comments.Where(comment => comment.UserId == userId).ToListAsync();
+            return comments == null ? NotFound() : Ok(comments);
         }
 
     }

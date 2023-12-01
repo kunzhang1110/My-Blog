@@ -101,10 +101,6 @@ textarea {
   transition: border 0.24s ease-in-out;
 }
 
-.tag-new {
-  height: 31px;
-}
-
 /* overrides */
 .nav-link {
   font-size: 1.2rem;

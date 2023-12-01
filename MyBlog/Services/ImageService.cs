@@ -30,9 +30,9 @@ namespace My_Blog.Services
         /// <summary>
         /// Add new images or replace images with the same name. Delete unsued images.
         /// </summary>
-        public async Task AddOrUpdateImages(List<IFormFile> files, int articleId)
+        public async Task<string?> AddOrUpdateImagesAsync(List<IFormFile> files, int articleId)
         {
-
+            if (files.Count == 0) return null;
             string directoryPath = Path.Combine(_imageDirectory, articleId.ToString());
             Directory.CreateDirectory(directoryPath);
 
@@ -56,6 +56,7 @@ namespace My_Blog.Services
             }
 
             if (Directory.GetFiles(directoryPath).ToList().Count == 0) Directory.Delete(directoryPath, true);
+            return (null);
         }
 
         /// <summary>

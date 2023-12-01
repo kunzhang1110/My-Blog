@@ -2,7 +2,7 @@
 {
     public partial class ArticleUpdateDto
     {
-        public int Id { get; set; }
+        public int? Id { get; set; }
         public string? Date { get; set; }
         public string Title { get; set; } = null!;
         public string Body { get; set; } = null!;

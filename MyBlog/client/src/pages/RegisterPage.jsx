@@ -10,7 +10,7 @@ import { Spinner } from "../components/Spinner";
 import { api } from "../app/api";
 
 export const RegisterPage = () => {
-  const [usernameInput, setUsernameInput] = useState(DEFAULT_INPUT);
+  const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);
   const [emailInput, setEmailInput] = useState(DEFAULT_INPUT);
   const [passwordInput, setPasswordInput] = useState(DEFAULT_INPUT);
   const [message, setMessage] = useState("");
@@ -20,7 +20,7 @@ export const RegisterPage = () => {
   const registerHandler = () => {
     setIsLoading(true);
     const user = {
-      username: usernameInput.text,
+      userName: userNameInput.text,
       email: emailInput.text,
       password: passwordInput.text,
     };
@@ -36,7 +36,7 @@ export const RegisterPage = () => {
   };
   const validateRegisterInputs = () => {
     return (
-      validateInput(usernameInput, "username", setUsernameInput) &&
+      validateInput(userNameInput, "username", setUserNameInput) &&
       validateInput(emailInput, "email", setEmailInput) &&
       validateInput(passwordInput, "password", setPasswordInput)
     );
@@ -48,9 +48,9 @@ export const RegisterPage = () => {
       <Col md="6">
         <Form>
           <InputWithValidation
-            input={usernameInput}
+            input={userNameInput}
             inputType={"username"}
-            setInput={setUsernameInput}
+            setInput={setUserNameInput}
           />
           <InputWithValidation
             input={emailInput}

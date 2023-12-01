@@ -132,8 +132,8 @@ export const ArticleEditPage = () => {
 
   const postArticle = () => {
     if (
-      validateInput(title, "title", setTitle) &&
-      validateInput(body, "textarea", setBody)
+      validateInput(title, setTitle, "title") &&
+      validateInput(body, setBody, "textarea")
     ) {
       setIsLoading(true);
       const article = {
@@ -142,10 +142,6 @@ export const ArticleEditPage = () => {
         viewed: 0,
         tags: JSON.stringify(tags),
       };
-
-      const headers = new Headers({
-        Authorization: `Bearer ${user.token}`,
-      });
 
       const formData = new FormData();
       images.forEach((img) => {
@@ -159,11 +155,11 @@ export const ArticleEditPage = () => {
       if (id) {
         article["id"] = id;
         api.articles
-          .updateArticle(formData, id, headers)
+          .updateArticle(formData, id, user.authorizationHeader)
           .then(() => navigate(`/articles/${id}`));
       } else {
         api.articles
-          .createArticle(formData, headers)
+          .createArticle(formData, user.authorizationHeader)
           .then((resp) => resp.json())
           .then((data) => {
             console.log(data);

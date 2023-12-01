@@ -2,10 +2,10 @@
 
 namespace MyBlog.Models.Account
 {
-    public class RegisterModel
+    public class RegisterDto
     {
         [Required(ErrorMessage = "User Name is required")]
-        public string Username { get; set; }
+        public string UserName { get; set; }
 
         [EmailAddress]
         [Required(ErrorMessage = "Email is required")]

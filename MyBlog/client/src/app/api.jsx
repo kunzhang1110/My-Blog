@@ -1,12 +1,12 @@
 const account = {
-  login: (username, password) =>
+  login: (userName, password) =>
     fetch(`/api/account/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        username,
+        userName,
         password,
       }),
       cache: "default",
@@ -25,7 +25,7 @@ const account = {
 const articles = {
   getArticle: (id) => fetch(`/api/articles/${id}`).then((res) => res.json()),
 
-  getArticles: async (categoryName, pageNumber = 1, orderBy = "dateAsc") => {
+  getArticles: async (categoryName, pageNumber = 1, orderBy = "dateDesc") => {
     let params = {
       orderBy,
       pageNumber,
@@ -69,29 +69,35 @@ const articles = {
 const comments = {
   getComment: (id) => fetch(`/api/comments/${id}`).then((res) => res.json()),
 
-  getCommentsByArticleId: (articleId) =>
-    fetch(`/api/comments/getCommentsByAriticleId/${articleId}`).then((res) =>
-      res.json()
-    ),
+  getCommentsByArticleId: (articleId, pageNumber = 1, orderBy = "dateDesc") => {
+    let params = {
+      orderBy,
+      pageNumber,
+    };
+    return fetch(
+      `/api/comments/getCommentsByArticleId/${articleId}?` +
+        new URLSearchParams(params)
+    );
+  },
 
   getCommentsByUserId: (userId) =>
     fetch(`/api/comments/getCommentsByUserId/${userId}`).then((res) =>
       res.json()
     ),
 
-  createComment: (formData, headers) =>
+  createComment: (comment, headers) =>
     fetch(`/api/comments`, {
       method: "POST",
-      body: formData,
-      headers,
+      body: JSON.stringify(comment),
+      headers: { ...headers, "Content-Type": "application/json" },
       cache: "default",
     }),
 
-  updateComment: (formData, id, headers) =>
-    fetch(`/api/comments/${id}`, {
+  updateComment: (comment, headers) =>
+    fetch(`/api/comments`, {
       method: "PUT",
-      body: formData,
-      headers,
+      body: JSON.stringify(comment),
+      headers: { ...headers, "Content-Type": "application/json" },
       cache: "default",
     }),
 

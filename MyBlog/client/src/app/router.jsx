@@ -44,6 +44,10 @@ export const router = createBrowserRouter([
         element: <ArticlesListPage />,
       },
       {
+        path: "/articles",
+        element: <ArticlesListPage />,
+      },
+      {
         path: "/articles/categories/:category",
         element: <ArticlesListPage />,
         loader: async ({ params }) => {

@@ -5,7 +5,7 @@ namespace MyBlog.Test
 {
     public class DBContextTests
     {
-        private const string connectionString = "Server=MY-THINKPAD;Database=MyBlog;Trusted_Connection=True;";
+        private const string connectionString = "Server=MY-LEGION;Database=MyDatabase;Trusted_Connection=True;Encrypt=No";
 
         private readonly ITestOutputHelper _output;
         private readonly MyBlogContext _context;
@@ -17,7 +17,7 @@ namespace MyBlog.Test
         }
 
         [Fact]
-        public async Task Test1()
+        public async Task CanAddNewArticlesIntoDbTest()
         {
             var articleDTO = new ArticleDto()
             {
@@ -62,7 +62,7 @@ namespace MyBlog.Test
             await _context.SaveChangesAsync();
         }
 
-        protected void printArtilcesWithTags(IList<ArticleDto> articleDTOs)
+        protected void PrintArtilcesWithTags(IList<ArticleDto> articleDTOs)
         {
 
             foreach (var article in articleDTOs)

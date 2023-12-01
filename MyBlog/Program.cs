@@ -21,7 +21,9 @@ builder.Services
     .AddNewtonsoftJson(opt => opt.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);//prevent navigation properties reference loops
 
 builder.Services.AddDbContext<MyBlogContext>(
-    opt => opt.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")!));
+    opt => opt.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")!,
+        options => options.EnableRetryOnFailure()));
 
 builder.Services.AddIdentityCore<User>() //add identity service and role-based authorization service
         .AddRoles<Role>()
@@ -111,17 +113,17 @@ app.MapFallbackToFile("index.html");
 //apply migrations to database 
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<MyBlogContext>();
-var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+//var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 try
 {
     await context.Database.MigrateAsync(); //apply migrations
-    await DbInitializer.Initialize(context, userManager,roleManager); //if context is empty, initialize the database
+    await DbInitializer.Initialize(context, userManager, roleManager); //if context is empty, initialize the database
 }
 catch (Exception ex)
 {
-    logger.LogError(ex, "A problem occurred during migration");
+    //logger.LogError(ex, "A problem occurred during migration");
 }
 
 app.Run();
