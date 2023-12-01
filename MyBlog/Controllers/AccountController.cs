@@ -36,8 +36,9 @@ namespace MyBlog.Controllers
 
                 var authClaims = new List<Claim>
                 {
-                    new Claim(ClaimTypes.Name, user.UserName), //private claims
-                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //registered claims
+                    new (ClaimTypes.NameIdentifier, user.Id.ToString()), //private claims
+                    new (ClaimTypes.Name, user.UserName), //private claims
+                    new (JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()), //registered claims
                 };
 
                 foreach (var userRole in userRoles)

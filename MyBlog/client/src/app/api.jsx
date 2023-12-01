@@ -66,7 +66,44 @@ const articles = {
     }).then((res) => res.json()),
 };
 
+const comments = {
+  getComment: (id) => fetch(`/api/comments/${id}`).then((res) => res.json()),
+
+  getCommentsByArticleId: (articleId) =>
+    fetch(`/api/comments/getCommentsByAriticleId/${articleId}`).then((res) =>
+      res.json()
+    ),
+
+  getCommentsByUserId: (userId) =>
+    fetch(`/api/comments/getCommentsByUserId/${userId}`).then((res) =>
+      res.json()
+    ),
+
+  createComment: (formData, headers) =>
+    fetch(`/api/comments`, {
+      method: "POST",
+      body: formData,
+      headers,
+      cache: "default",
+    }),
+
+  updateComment: (formData, id, headers) =>
+    fetch(`/api/comments/${id}`, {
+      method: "PUT",
+      body: formData,
+      headers,
+      cache: "default",
+    }),
+
+  deleteComment: (id, headers) =>
+    fetch(`/api/comments/${id}`, {
+      method: "DELETE",
+      headers,
+    }),
+};
+
 export const api = {
   account,
   articles,
+  comments,
 };

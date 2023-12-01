@@ -113,10 +113,11 @@ var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<MyBlogContext>();
 var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 try
 {
     await context.Database.MigrateAsync(); //apply migrations
-    await DbInitializer.Initialize(context, userManager); //if context is empty, initialize the database
+    await DbInitializer.Initialize(context, userManager,roleManager); //if context is empty, initialize the database
 }
 catch (Exception ex)
 {

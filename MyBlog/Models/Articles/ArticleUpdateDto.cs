@@ -1,6 +1,6 @@
 ﻿namespace MyBlog.Models.Articles
 {
-    public partial class UpdateArticleDto
+    public partial class ArticleUpdateDto
     {
         public int Id { get; set; }
         public string? Date { get; set; }

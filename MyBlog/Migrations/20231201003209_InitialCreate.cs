@@ -39,13 +39,42 @@ namespace My_Blog.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MyBlogComments",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArticleId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    Body = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MyBlogComments", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MyBlogComments_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MyBlogComments_MyBlogArticles_ArticleId",
+                        column: x => x.ArticleId,
+                        principalTable: "MyBlogArticles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "MyBlogArticleTag",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     ArticleId = table.Column<int>(type: "int", nullable: true),
-                    TagId = table.Column<int>(type: "int", nullable: true)
+                    TagId = table.Column<int>(type: "int", nullable: true),
+                    CommentId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -56,6 +85,11 @@ namespace My_Blog.Migrations
                         principalTable: "MyBlogArticles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MyBlogArticleTag_MyBlogComments_CommentId",
+                        column: x => x.CommentId,
+                        principalTable: "MyBlogComments",
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_MyBlogArticleTag_MyBlogTags_TagId",
                         column: x => x.TagId,
@@ -69,9 +103,24 @@ namespace My_Blog.Migrations
                 column: "ArticleId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MyBlogArticleTag_CommentId",
+                table: "MyBlogArticleTag",
+                column: "CommentId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_MyBlogArticleTag_TagId",
                 table: "MyBlogArticleTag",
                 column: "TagId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MyBlogComments_ArticleId",
+                table: "MyBlogComments",
+                column: "ArticleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MyBlogComments_UserId",
+                table: "MyBlogComments",
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -80,10 +129,13 @@ namespace My_Blog.Migrations
                 name: "MyBlogArticleTag");
 
             migrationBuilder.DropTable(
-                name: "MyBlogArticles");
+                name: "MyBlogComments");
 
             migrationBuilder.DropTable(
                 name: "MyBlogTags");
+
+            migrationBuilder.DropTable(
+                name: "MyBlogArticles");
         }
     }
 }

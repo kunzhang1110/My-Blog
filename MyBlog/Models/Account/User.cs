@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using MyBlog.Models.Articles;
 
 namespace MyBlog.Models.Account
 {
     public class User : IdentityUser<int>
     {
-        //IdentityUser defines properties like Email, Username, etc.
+        public virtual ICollection<Comment> Comments { get; set; } = new HashSet<Comment>();
     }
 }

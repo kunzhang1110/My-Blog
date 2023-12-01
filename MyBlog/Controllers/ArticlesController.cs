@@ -64,7 +64,7 @@ namespace MyBlog.Controllers
             return tagIds;
         }
 
-        private async Task<Article> UpdateArticle(Article? article, UpdateArticleDto request)
+        private async Task<Article> UpdateArticle(Article? article, ArticleUpdateDto request)
         {
             if (article != null)
             {
@@ -210,7 +210,7 @@ namespace MyBlog.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> PostArticle([FromForm] UpdateArticleDto request, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> PostArticle([FromForm] ArticleUpdateDto request, [FromForm] List<IFormFile> files)
         {
             var article = await UpdateArticle(null, request);
             await _imageService.AddOrUpdateImages(files, article.Id);
@@ -220,7 +220,7 @@ namespace MyBlog.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutArticle([FromRoute] int id, [FromForm] UpdateArticleDto request, [FromForm] List<IFormFile> files)
+        public async Task<IActionResult> PutArticle([FromRoute] int id, [FromForm] ArticleUpdateDto request, [FromForm] List<IFormFile> files)
         {
 
             var article = await _context.Articles.Include(a => a.ArticleTags).Where(at => at.Id == id).FirstOrDefaultAsync();

@@ -27,7 +27,7 @@ namespace My_Blog.Data
         public virtual DbSet<Article> Articles { get; set; } = null!;
         public virtual DbSet<Tag> Tags { get; set; } = null!;
         public virtual DbSet<ArticleTag> ArticleTags { get; set; } = null!;
-
+        public virtual DbSet<Comment> Comments { get; set; } = null!;
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -58,18 +58,29 @@ namespace My_Blog.Data
                 entity.HasOne(articleTag => articleTag.Article)
                     .WithMany(article => article.ArticleTags)
                     .HasForeignKey(articleTag => articleTag.ArticleId)
-                    .OnDelete(DeleteBehavior.Cascade);//delete cascade on deleting article but not tag
+                    .OnDelete(DeleteBehavior.Cascade);//delete articleTag will deleting article but not tag
 
-                entity.HasOne(d => d.Tag)
-                    .WithMany(p => p.ArticleTags)
+                entity.HasOne(articleTag => articleTag.Tag)
+                    .WithMany(tag => tag.ArticleTags)
                     .HasForeignKey(d => d.TagId);
             });
 
-            builder.Entity<Role>()
-              .HasData(
-                  new Role { Id = 1, Name = "Member", NormalizedName = "MEMBER" },
-                  new Role { Id = 2, Name = "Admin", NormalizedName = "ADMIN" }
-            );
+            builder.Entity<Comment>(entity =>
+            {
+                entity.ToTable("MyBlogComments");
+
+                entity.HasOne(comment => comment.Article)
+                    .WithMany(article => article.Comments)
+                    .HasForeignKey(comment => comment.ArticleId)
+                    .IsRequired();
+
+
+                entity.HasOne(comment => comment.User)
+                    .WithMany(user => user.Comments)
+                    .HasForeignKey(comment => comment.UserId)
+                    .IsRequired();
+            });
+
 
             // exclude Idenetity tables in migrations
             builder.Entity<User>().ToTable("AspNetUsers", t => t.ExcludeFromMigrations());

@@ -125,74 +125,7 @@ namespace My_Blog.Migrations
                     b.ToTable("AspNetUserTokens", null, t => t.ExcludeFromMigrations());
                 });
 
-            modelBuilder.Entity("MyBlog.Models.Articles.Article", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("Views")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MyBlogArticles");
-                });
-
-            modelBuilder.Entity("MyBlog.Models.Articles.ArticleTag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("ArticleId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TagId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ArticleId");
-
-                    b.HasIndex("TagId");
-
-                    b.ToTable("MyBlogArticleTag", (string)null);
-                });
-
-            modelBuilder.Entity("MyBlog.Models.Articles.Tag", b =>
-                {
-                    b.Property<int?>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .HasMaxLength(225)
-                        .HasColumnType("nvarchar(225)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MyBlogTags");
-                });
-
-            modelBuilder.Entity("MyBlog.Models.Security.Role", b =>
+            modelBuilder.Entity("MyBlog.Models.Account.Role", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -225,20 +158,20 @@ namespace My_Blog.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "b0ccde6f-f816-412c-b406-21450862e8a6",
+                            ConcurrencyStamp = "e70548eb-64f3-4be7-94a6-af9a5bcbeb5b",
                             Name = "Member",
                             NormalizedName = "MEMBER"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "5b9ce5c3-b12d-4b9f-82ab-6998c4442037",
+                            ConcurrencyStamp = "afae5d21-ff65-4cfe-b2d4-a71c1774f359",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
                 });
 
-            modelBuilder.Entity("MyBlog.Models.Security.User", b =>
+            modelBuilder.Entity("MyBlog.Models.Account.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -306,9 +239,111 @@ namespace My_Blog.Migrations
                     b.ToTable("AspNetUsers", null, t => t.ExcludeFromMigrations());
                 });
 
+            modelBuilder.Entity("MyBlog.Models.Articles.Article", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("Views")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MyBlogArticles");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Articles.ArticleTag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("CommentId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("MyBlogArticleTag", (string)null);
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Articles.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MyBlogComments", (string)null);
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Articles.Tag", b =>
+                {
+                    b.Property<int?>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .HasMaxLength(225)
+                        .HasColumnType("nvarchar(225)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("MyBlogTags");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>
                 {
-                    b.HasOne("MyBlog.Models.Security.Role", null)
+                    b.HasOne("MyBlog.Models.Account.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -317,7 +352,7 @@ namespace My_Blog.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
-                    b.HasOne("MyBlog.Models.Security.User", null)
+                    b.HasOne("MyBlog.Models.Account.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -326,7 +361,7 @@ namespace My_Blog.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<int>", b =>
                 {
-                    b.HasOne("MyBlog.Models.Security.User", null)
+                    b.HasOne("MyBlog.Models.Account.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -335,13 +370,13 @@ namespace My_Blog.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<int>", b =>
                 {
-                    b.HasOne("MyBlog.Models.Security.Role", null)
+                    b.HasOne("MyBlog.Models.Account.Role", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MyBlog.Models.Security.User", null)
+                    b.HasOne("MyBlog.Models.Account.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -350,7 +385,7 @@ namespace My_Blog.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<int>", b =>
                 {
-                    b.HasOne("MyBlog.Models.Security.User", null)
+                    b.HasOne("MyBlog.Models.Account.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -364,6 +399,10 @@ namespace My_Blog.Migrations
                         .HasForeignKey("ArticleId")
                         .OnDelete(DeleteBehavior.Cascade);
 
+                    b.HasOne("MyBlog.Models.Articles.Comment", null)
+                        .WithMany("ArticleTags")
+                        .HasForeignKey("CommentId");
+
                     b.HasOne("MyBlog.Models.Articles.Tag", "Tag")
                         .WithMany("ArticleTags")
                         .HasForeignKey("TagId");
@@ -373,7 +412,38 @@ namespace My_Blog.Migrations
                     b.Navigation("Tag");
                 });
 
+            modelBuilder.Entity("MyBlog.Models.Articles.Comment", b =>
+                {
+                    b.HasOne("MyBlog.Models.Articles.Article", "Article")
+                        .WithMany("Comments")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyBlog.Models.Account.User", "User")
+                        .WithMany("Comments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Account.User", b =>
+                {
+                    b.Navigation("Comments");
+                });
+
             modelBuilder.Entity("MyBlog.Models.Articles.Article", b =>
+                {
+                    b.Navigation("ArticleTags");
+
+                    b.Navigation("Comments");
+                });
+
+            modelBuilder.Entity("MyBlog.Models.Articles.Comment", b =>
                 {
                     b.Navigation("ArticleTags");
                 });
