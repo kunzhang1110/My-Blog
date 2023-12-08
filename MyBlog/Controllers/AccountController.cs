@@ -61,7 +61,8 @@ namespace MyBlog.Controllers
                 expiration = token.ValidTo,
                 userName = user.UserName,
                 roles = userRoles,
-                userId = user.Id
+                userId = user.Id,
+                email = user.Email,
             });
 
         }

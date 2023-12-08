@@ -132,6 +132,7 @@ namespace MyBlog.Controllers
             return Ok(commentDtos);
         }
 
+
         /// <summary>
         /// Get a list of comments written by an user by user id
         /// </summary>
@@ -141,6 +142,7 @@ namespace MyBlog.Controllers
             var comments = await _context.Comments.Where(comment => comment.UserId == userId).ToListAsync();
             return comments == null ? NotFound() : Ok(comments);
         }
+
 
     }
 }

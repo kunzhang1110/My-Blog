@@ -72,12 +72,19 @@ export const ArticleCard = ({ article }) => {
 
   const deleteArticle = () => {
     setIsDeleting(true);
-    api.articles.deleteArticle(article.id, user.header).then(() => {
-      toggleModal();
-      setIsDeleting(false);
-      if (pageNumber !== null) navigate(`/articles/page/${pageNumber}`);
-      navigate(0); //refresh page
-    });
+    api.articles
+      .deleteArticle(article.id, user.authorizationHeader)
+      .then(() => {
+        toggleModal();
+        setIsDeleting(false);
+
+        if (pageNumber != null) {
+          navigate(`/articles/page/${pageNumber}`);
+        } else {
+          navigate(`/`);
+        }
+        navigate(0);
+      });
   };
 
   return (
@@ -206,7 +213,7 @@ export const ArticleCard = ({ article }) => {
             </Link>
           </Row>
         )}
-        <ButtonGroup style={{ marginTop: "15px" }}>
+        <ButtonGroup className="my-3">
           <Button
             color="transparent"
             onClick={() => setIsCommentOpen(!isCommentOpen)}

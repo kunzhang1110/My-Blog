@@ -121,7 +121,7 @@ try
     await context.Database.MigrateAsync(); //apply migrations
     await DbInitializer.Initialize(context, userManager, roleManager); //if context is empty, initialize the database
 }
-catch (Exception ex)
+catch (Exception)
 {
     //logger.LogError(ex, "A problem occurred during migration");
 }

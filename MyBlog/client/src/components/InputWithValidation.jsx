@@ -1,9 +1,6 @@
 import React from "react";
 import { FormFeedback, FormGroup, Input, Label } from "reactstrap";
-
-const _captalize = (string) => {
-  return string[0].toUpperCase() + string.substring(1);
-};
+import { _captalize } from "../app/utils";
 
 const _validateEmail = (str) => {
   return String(str)

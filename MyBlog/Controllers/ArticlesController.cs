@@ -140,16 +140,50 @@ namespace MyBlog.Controllers
         /// Get n tags order by number of usages by articles
         /// </summary>
 
-        [HttpGet("Categories/{n}")]
-        public async Task<ActionResult<IEnumerable<Tag?>>> GetCategories(int n)
+        [HttpGet("Categories")]
+        public async Task<ActionResult<IEnumerable<Tag?>>> GetCategories()
         {
             return await _context.ArticleTags
                 .GroupBy(at => at.TagId)
                 .Select(g => new { Id = g.Key, Count = g.Count() })
                 .OrderByDescending(g => g.Count)
-                .Take(n)
                 .Select(g => _context.Tags.SingleOrDefault(t => t.Id == g.Id))
                 .ToListAsync();
+        }
+
+        /// <summary>
+        /// Get a list of articles that are commented by user with user id
+        /// </summary>
+        [HttpGet("GetArticlesByUserCommented/{userId}")]
+        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticlesByUserCommented(int userId, [FromQuery] PageParams pageParams)
+        {
+            var articleDtos = new List<ArticleDto>();
+
+            var articleIds = await _context
+                .Comments
+                .Where(comment => comment.UserId == userId)
+                .GroupBy(c => c.ArticleId).Select(c => c.Key)
+                .ToListAsync();
+
+            var query = _context.Articles
+                .Where(a => articleIds.Contains(a.Id))
+                .AsQueryable();
+
+            var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
+
+
+            if (articles.Count == 0) return BadRequest();
+
+            foreach (var article in articles)
+            {
+                articleDtos.Add(
+                  article.ToAritcleDto(null, true));
+            }
+
+            Response.AddPaginationHeader(articles.PaginationData);
+            return Ok(articleDtos);
+
+
         }
 
 

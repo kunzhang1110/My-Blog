@@ -17,12 +17,14 @@ import { Link, NavLink as RRNavLink } from "react-router-dom";
 import { useAuth } from "../app/auth.jsx";
 import { UserLogin } from "./UserLogin";
 import { api } from "../app/api.jsx";
+import { _captalize } from "../app/utils";
 
 export const NavMenu = () => {
   const [categories, setCategories] = useState([]);
   const [collapsed, setCollapsed] = useState(true);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
-  const [isDropDownOpen, setIsDropdownOpen] = useState(false);
+  const [isUsernameDropDownOpen, setIsUsernameDropdownOpen] = useState(false);
+  const [isCategoryDropDownOpen, setIsCategoryDropDownOpen] = useState(false);
 
   const { user, logout, setMessage } = useAuth();
 
@@ -71,7 +73,7 @@ export const NavMenu = () => {
               Home
             </NavLink>
           </NavItem>
-          {categories.map((category) => (
+          {categories.slice(0, 3).map((category) => (
             <NavItem key={category.name}>
               <NavLink
                 tag={RRNavLink}
@@ -83,29 +85,56 @@ export const NavMenu = () => {
               </NavLink>
             </NavItem>
           ))}
+
+          <NavItem>
+            <Dropdown
+              isOpen={isCategoryDropDownOpen}
+              toggle={() => setIsCategoryDropDownOpen((prev) => !prev)}
+            >
+              <DropdownToggle tag="span">
+                <div className="navbar-nav">
+                  <NavLink style={{ cursor: "pointer" }}>More</NavLink>
+                </div>
+              </DropdownToggle>
+              <DropdownMenu>
+                {categories.slice(4).map((category) => (
+                  <DropdownItem
+                    tag={Link}
+                    to={`articles/categories/${category.name}`}
+                    key={category.name}
+                  >
+                    {category.name}
+                  </DropdownItem>
+                ))}
+              </DropdownMenu>
+            </Dropdown>
+          </NavItem>
+
+          <VerticalDivider />
+
           <NavItem>
             <NavLink tag={RRNavLink} to="/about" id="About">
               About
             </NavLink>
           </NavItem>
-
+          <VerticalDivider />
           <NavItem>
             {user.userName !== "" ? (
               <Dropdown
-                isOpen={isDropDownOpen}
-                toggle={() => setIsDropdownOpen((prev) => !prev)}
+                isOpen={isUsernameDropDownOpen}
+                toggle={() => setIsUsernameDropdownOpen((prev) => !prev)}
               >
                 <DropdownToggle tag="span">
                   <div className="navbar-nav">
-                    <NavLink tag={RRNavLink} to="#">
-                      {user.userName}
+                    <NavLink style={{ cursor: "pointer" }}>
+                      {_captalize(user.userName)}
                     </NavLink>
                   </div>
                 </DropdownToggle>
                 <DropdownMenu>
-                  {/* <DropdownItem  tag={Link} to={`users/account`}>
-                      Account
-                    </DropdownItem> */}
+                  <DropdownItem tag={Link} to={`/user/profile`}>
+                    My Profile
+                  </DropdownItem>
                   <DropdownItem onClick={logout}>Log Out</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
@@ -146,3 +175,15 @@ export const NavMenu = () => {
     </Navbar>
   );
 };
+
+const VerticalDivider = () => (
+  <span
+    style={{
+      borderLeft: "1px solid grey",
+      height: "25px",
+      marginTop: "12px",
+      marginRight: "10px",
+      marginLeft: "10px",
+    }}
+  ></span>
+);

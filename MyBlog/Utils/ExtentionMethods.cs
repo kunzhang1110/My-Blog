@@ -18,6 +18,11 @@ namespace My_Blog.Utils
             return match.Groups[1].Value; //return the 1st group
         }
 
+
+        /// <summary>
+        /// Convert Article to ArticleDTO. If shouldGetSummary is true, the body of the article is a summary.
+        /// </summary>
+        /// <param name="shouldGetSummary">If true, the body of the article is a summary. Default false</param>
         public static ArticleDto ToAritcleDto(this Article article, List<string>? imageUrls, bool shouldGetSummary = false)
         {
             return new ArticleDto()

@@ -15,19 +15,27 @@ namespace My_Blog.Data
 
         public static async Task Initialize(MyBlogContext context, UserManager<User> userManager, RoleManager<Role> roleManager)
         {
+            var executionStrategy = context.Database.CreateExecutionStrategy();
+
             void UpdateDatabase<T>(ICollection<T> list, DbSet<T> dbset, string? tableName = null) where T : class
             {
                 if (dbset.Any()) return;
-                using var transaction = context.Database.BeginTransaction();
 
-                if (tableName != null) context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{tableName}] ON");
-                foreach (var element in list)
+
+                executionStrategy.Execute(() =>
                 {
-                    dbset.Add(element);
-                }
-                context.SaveChanges();
-                if (tableName != null) context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{tableName}] OFF");
-                transaction.Commit();
+                    using var transaction = context.Database.BeginTransaction();
+
+                    if (tableName != null) context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{tableName}] ON");
+
+                    dbset.AddRange(list);
+
+                    context.SaveChanges();
+                    if (tableName != null) context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{tableName}] OFF");
+                    transaction.Commit();
+                });
+
+
             }
 
 
@@ -201,13 +209,13 @@ namespace My_Blog.Data
                 },
                 new ()
                 {
-                Id= 28,
-                Name="React"
+                    Id= 28,
+                    Name="React"
                 },
                 new ()
                 {
-                Id= 29,
-                Name="ASP.NET Core"
+                    Id= 29,
+                    Name="ASP.NET Core"
                 }
             };
 
@@ -230,10 +238,10 @@ namespace My_Blog.Data
             };
 
 
-
+  
             UpdateDatabase(articles, context.Articles, "MyBlogArticles");
+            UpdateDatabase(tags, context.Tags, "MyBlogTags");
             UpdateDatabase(articleTags, context.ArticleTags);
-            UpdateDatabase(tags, context.Tags);
             UpdateDatabase(comments, context.Comments);
         }
     }

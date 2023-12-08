@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Alert, Col, Row } from "reactstrap";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { ArticleCard } from "../components/ArticleCard";
 import { SideBar } from "../components/SideBar";
 import { Spinner } from "../components/Spinner";
@@ -9,12 +9,7 @@ import { AppBreadCrumb } from "../components/AppBreadCrumb";
 import { api } from "../app/api";
 import { AppPagination } from "../components/AppPagination";
 
-export const ArticleList = ({
-  articlesList,
-  paginationData,
-  category,
-  updateArticlesList,
-}) => {
+export const ArticleList = ({ articlesList, paginationData, category }) => {
   return (
     <>
       <div style={{ marginTop: "20px" }}>
@@ -25,7 +20,6 @@ export const ArticleList = ({
       <AppPagination
         paginationData={paginationData ?? null}
         category={category}
-        updateArticlesList={(c, p) => updateArticlesList(c, p)}
       />
     </>
   );
@@ -37,37 +31,34 @@ export const ArticlesListPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const { category } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const updateArticlesList = (category, pageNumber) => {
+  useEffect(() => {
+    document.title = "Kun's Blog - " + (category ? category : "Home");
+    setIsLoading(true);
+
     api.articles
-      .getArticles(category, pageNumber)
+      .getArticles(category, searchParams.get("pageNumber") ?? 1)
       .then((resp) => {
         if (resp.status == "400") {
           navigate("/error", {
             state: { message: "Page number exceeds max pages" },
           });
-          console.log(resp);
+
           return;
         }
         setPaginationData(JSON.parse(resp.headers.get("Pagination")));
         return resp.json();
       })
       .then((data) => {
-        console.log(data);
         setArticlesList(data);
         setIsLoading(false);
       })
       .catch((err) => {
         console.log(err);
       });
-  };
-
-  useEffect(() => {
-    document.title = "Kun's Blog - " + (category ? category : "Home");
-    setIsLoading(true);
-    updateArticlesList(category, 1);
-  }, [category]);
+  }, [category, searchParams]);
 
   useEffect(() => {
     if (isAlertOpen) {
@@ -104,13 +95,11 @@ export const ArticlesListPage = () => {
               }}
             >
               {category ? <AppBreadCrumb /> : null}
-              <>
-                <ArticleList
-                  articlesList={articlesList}
-                  paginationData={paginationData ?? null}
-                  updateArticlesList={(p) => updateArticlesList(category, p)}
-                />
-              </>
+              <ArticleList
+                articlesList={articlesList}
+                paginationData={paginationData}
+                category={category}
+              />
             </Col>
             <Col
               xxl={{

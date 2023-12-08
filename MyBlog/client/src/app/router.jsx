@@ -5,6 +5,7 @@ import { ArticleSinglePage } from "../pages/ArticleSinglePage";
 import { ArticleEditPage } from "../pages/ArticleEditPage";
 import { ArticlesListPage } from "../pages/ArticlesListPage";
 import { AboutPage } from "../pages/AboutPage";
+import { ProfilePage } from "../pages/ProfilePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { Authorization } from "../app/auth.jsx";
 import ErrorPage from "../pages/ErrorPage";
@@ -75,6 +76,13 @@ export const router = createBrowserRouter([
         element: <RegisterPage />,
         handle: {
           crumb: () => "Register",
+        },
+      },
+      {
+        path: "/user/profile",
+        element: <ProfilePage />,
+        handle: {
+          crumb: () => "Profile",
         },
       },
       {

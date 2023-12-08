@@ -25,7 +25,7 @@ const account = {
 const articles = {
   getArticle: (id) => fetch(`/api/articles/${id}`).then((res) => res.json()),
 
-  getArticles: async (categoryName, pageNumber = 1, orderBy = "dateDesc") => {
+  getArticles: async (categoryName, pageNumber = 1, orderBy = "dateAsc") => {
     let params = {
       orderBy,
       pageNumber,
@@ -60,16 +60,33 @@ const articles = {
       headers,
     }),
 
-  getCategories: (n = 3) =>
-    fetch(`/api/articles/categories/${n}`, {
+  getCategories: () =>
+    fetch(`/api/articles/categories`, {
       method: "GET",
     }).then((res) => res.json()),
+
+  getArticlesByUserCommented: async (
+    userId,
+    pageNumber = 1,
+    orderBy = "dateAsc"
+  ) => {
+    let params = {
+      orderBy,
+      pageNumber,
+    };
+
+    const response = await fetch(
+      `/api/articles/getArticlesByUserCommented/${userId}?` +
+        new URLSearchParams(params)
+    );
+    return response;
+  },
 };
 
 const comments = {
   getComment: (id) => fetch(`/api/comments/${id}`).then((res) => res.json()),
 
-  getCommentsByArticleId: (articleId, pageNumber = 1, orderBy = "dateDesc") => {
+  getCommentsByArticleId: (articleId, pageNumber = 1, orderBy = "dateAsc") => {
     let params = {
       orderBy,
       pageNumber,
