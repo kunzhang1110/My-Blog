@@ -1,19 +1,18 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card, CardBody } from "reactstrap";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
-import { useAuth } from "../app/auth";
 import { _captalize } from "../app/utils";
 import { Spinner } from "../components/Spinner";
 import { ArticleList } from "./ArticlesListPage";
-import { api } from "../app/api";
+import { useAppContext } from "../app/appContext";
 import { useNavigate } from "react-router-dom";
 
 export const ProfilePage = () => {
-  const { user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [articlesList, setArticlesList] = useState([]);
   const [paginationData, setPaginationData] = useState({});
   const navigate = useNavigate();
+  const { api, user } = useAppContext();
 
   const updateArticlesList = (pageNumber, orderBy) => {
     api.articles

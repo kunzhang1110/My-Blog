@@ -55,7 +55,7 @@ export const AboutPage = () => {
               </p>
               <hr />
             </Row>
-            <Row>
+            {/* <Row>
               <h2>Video</h2>
               <Col>
                 <div className="youtube-video">
@@ -69,7 +69,7 @@ export const AboutPage = () => {
                   ></iframe>
                 </div>
               </Col>
-            </Row>
+            </Row> */}
           </CardBody>
         </Card>
       </Col>

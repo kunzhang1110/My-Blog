@@ -16,9 +16,8 @@ import {
 } from "reactstrap";
 import { FaUser } from "react-icons/fa";
 import { VscEllipsis } from "react-icons/vsc";
-import { useAuth } from "../app/auth";
 import { Spinner } from "./Spinner";
-import { api } from "../app/api";
+import { useAppContext } from "../app/appContext";
 import { CommentEdit } from "./CommentEdit";
 
 export const Comment = ({
@@ -31,21 +30,19 @@ export const Comment = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
-  const { user } = useAuth();
+  const { api, user } = useAppContext();
 
   const toggleDropDown = () => setIsDropdownOpen((prev) => !prev);
   const toggleModal = () => setIsModalOpen((prev) => !prev);
   const toggleEditMode = () => setIsEditMode((prev) => !prev);
 
   const handleDeleteComment = () => {
-    api.comments
-      .deleteComment(comment.id, user.authorizationHeader)
-      .then(() => {
-        setIsDeleting(true);
-        setIsModalOpen(false);
-        updateComments(articleId, 1, true);
-        setIsDeleting(false);
-      });
+    api.comments.deleteComment(comment.id).then(() => {
+      setIsDeleting(true);
+      setIsModalOpen(false);
+      updateComments(articleId, 1, true);
+      setIsDeleting(false);
+    });
   };
 
   return (

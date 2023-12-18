@@ -9,10 +9,10 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { SiGithub, SiTwitter, SiZhihu } from "react-icons/si";
-import { useAuth } from "../app/auth.jsx";
+import { useAppContext } from "../app/appContext.jsx";
 
 export const SideBar = ({ setIsAlertOpen }) => {
-  const { user } = useAuth();
+  const { user } = useAppContext();
 
   const clickEmail = (e) => {
     navigator.clipboard.writeText(e.target.childNodes[0].textContent);

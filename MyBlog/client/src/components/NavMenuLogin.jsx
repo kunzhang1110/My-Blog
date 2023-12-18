@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
-import { useAuth } from "../app/auth.jsx";
 import {
   DEFAULT_INPUT,
   validateInput,
   InputWithValidation,
-} from "./InputWithValidation";
-import { Spinner } from "./Spinner";
+} from "./InputWithValidation.jsx";
+import { Spinner } from "./Spinner.jsx";
 import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../app/appContext.jsx";
 
-export const UserLogin = ({ toggleLoginModal }) => {
+export const NavMenuLogin = ({ toggleLoginModal }) => {
   const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);
   const [passwordInput, setPasswordInput] = useState(DEFAULT_INPUT);
   const [isRemembered, setIsRemembered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { user, login, message } = useAuth();
+  const { user, api, message, setUser } = useAppContext();
 
   useEffect(() => {
     if (user.userName === "") {
@@ -30,13 +30,21 @@ export const UserLogin = ({ toggleLoginModal }) => {
       validateInput(passwordInput, "password", setPasswordInput)
     ) {
       setIsLoading(true);
-      login(
-        userNameInput.text,
-        passwordInput.text,
-        isRemembered,
-        setIsLoading,
-        toggleLoginModal
-      );
+      api.account
+        .login(
+          userNameInput.text,
+          passwordInput.text,
+          isRemembered,
+          toggleLoginModal
+        )
+        .then((data) => {
+          toggleLoginModal();
+          setIsLoading(false);
+          setUser(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   };
 

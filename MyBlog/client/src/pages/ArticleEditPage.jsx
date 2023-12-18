@@ -13,7 +13,6 @@ import {
 } from "reactstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { useAuth } from "../app/auth.jsx";
 import {
   DEFAULT_INPUT,
   validateInput,
@@ -23,7 +22,7 @@ import { AppReactMarkdown } from "../components/AppReactMarkdown.jsx";
 import { Spinner } from "../components/Spinner";
 import { Tag } from "../components/Tag";
 import { AppBreadCrumb } from "../components/AppBreadCrumb.jsx";
-import { api } from "../app/api.jsx";
+import { useAppContext } from "../app/appContext.jsx";
 
 /** Create and update articles. If address contains id, then update; otherwise, create.
  * Use live markdown preview currently, bodyPreview is not in use. Live preview uses more browser resources*/
@@ -41,7 +40,7 @@ export const ArticleEditPage = () => {
 
   const navigate = useNavigate();
   const { id } = useParams();
-  const { user } = useAuth();
+  const { api } = useAppContext();
 
   const addFiles = useCallback(
     (files) => {
@@ -89,7 +88,6 @@ export const ArticleEditPage = () => {
 
       //md file
       if (md_file != null) {
-        console.log(image_dir_path_prefix);
         const reader = new FileReader();
         reader.onload = () => {
           const content = reader.result
@@ -138,7 +136,6 @@ export const ArticleEditPage = () => {
         viewed: 0,
         tags: JSON.stringify(tags),
       };
-
       let formData = new FormData();
       images.forEach((img) => {
         formData.append("files", img.file); //collection of files with the same name "files"
@@ -152,12 +149,12 @@ export const ArticleEditPage = () => {
         //update article
         article["id"] = id;
         api.articles
-          .updateArticle(formData, id, user.authorizationHeader)
+          .updateArticle(formData, id)
           .then(() => navigate(`/articles/${id}`));
       } else {
         //create article
         api.articles
-          .createArticle(formData, user.authorizationHeader)
+          .createArticle(formData)
           .then((resp) => resp.json())
           .then((data) => {
             setIsLoading(false);
@@ -169,10 +166,12 @@ export const ArticleEditPage = () => {
 
   const addTag = (e) => {
     e.preventDefault();
+    console.log(tagInput);
     if (tags.find((t) => t.name === tagInput)) {
       console.log("Duplicated Tag");
     } else {
-      setTags([...tags, { id: null, name: tagInput.trim() }]);
+      setTags([...tags, { name: tagInput.trim() }]);
+
       setIsAddingNewTag(false);
     }
   };
@@ -449,9 +448,6 @@ export const ArticleEditPage = () => {
                       >
                         Cancel
                       </Button>
-                      {/* <Button color="success" onClick={() => setBodyPreview(body)}>
-            Preview
-          </Button> */}
                       <Button
                         className="m-1"
                         color="primary"
@@ -465,6 +461,7 @@ export const ArticleEditPage = () => {
                   {/* upload images */}
                   <FormGroup>
                     <h4>Upload Images and Markdown Files</h4>
+
                     <div className="dropzone">
                       <p>Drop images and Mardown files anywhere on the page</p>
                     </div>

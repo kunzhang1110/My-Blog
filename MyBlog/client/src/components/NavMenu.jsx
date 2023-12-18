@@ -14,9 +14,8 @@ import {
   NavLink,
 } from "reactstrap";
 import { Link, NavLink as RRNavLink } from "react-router-dom";
-import { useAuth } from "../app/auth.jsx";
-import { UserLogin } from "./UserLogin";
-import { api } from "../app/api.jsx";
+import { NavMenuLogin } from "./NavMenuLogin.jsx";
+import { useAppContext } from "../app/appContext.jsx";
 import { _captalize } from "../app/utils";
 
 export const NavMenu = () => {
@@ -25,14 +24,13 @@ export const NavMenu = () => {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isUsernameDropDownOpen, setIsUsernameDropdownOpen] = useState(false);
   const [isCategoryDropDownOpen, setIsCategoryDropDownOpen] = useState(false);
-
-  const { user, logout, setMessage } = useAuth();
+  const { api, user, setMessage } = useAppContext();
 
   useEffect(() => {
-    api.articles.getCategories().then((tags) => {
-      setCategories(tags);
+    api.articles.getCategories().then((categories) => {
+      setCategories(categories);
     });
-  }, []);
+  }, [user]);
 
   const toggleLoginModal = () => {
     if (isLoginModalOpen) {
@@ -135,7 +133,9 @@ export const NavMenu = () => {
                   <DropdownItem tag={Link} to={`/user/profile`}>
                     My Profile
                   </DropdownItem>
-                  <DropdownItem onClick={logout}>Log Out</DropdownItem>
+                  <DropdownItem onClick={api.account.logout}>
+                    Log Out
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             ) : (
@@ -157,7 +157,7 @@ export const NavMenu = () => {
               unmountOnClose={false}
             >
               <ModalBody className="m-3">
-                <UserLogin toggleLoginModal={toggleLoginModal} />
+                <NavMenuLogin toggleLoginModal={toggleLoginModal} />
               </ModalBody>
             </Modal>
           </NavItem>

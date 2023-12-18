@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { api } from "../app/api";
+import { useAppContext } from "../app/appContext";
 import { Button, Card, CardBody } from "reactstrap";
-import { useAuth } from "../app/auth";
 import { Spinner } from "./Spinner";
 import { Comment } from "./Comment";
 import { CommentEdit } from "./CommentEdit";
@@ -10,8 +9,7 @@ export const CommentsList = ({ articleId }) => {
   const [comments, setComments] = useState([]);
   const [paginationData, setPaginationData] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
-  const { user } = useAuth();
+  const { api, user } = useAppContext();
 
   const updateComments = (articleId, pageNumber, isReloading = false) => {
     {

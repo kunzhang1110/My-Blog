@@ -1,104 +1,117 @@
 import React from "react";
-import { createBrowserRouter } from "react-router-dom";
-import App from "../App";
-import { ArticleSinglePage } from "../pages/ArticleSinglePage";
-import { ArticleEditPage } from "../pages/ArticleEditPage";
-import { ArticlesListPage } from "../pages/ArticlesListPage";
-import { AboutPage } from "../pages/AboutPage";
-import { ProfilePage } from "../pages/ProfilePage";
-import { RegisterPage } from "../pages/RegisterPage";
-import { Authorization } from "../app/auth.jsx";
-import ErrorPage from "../pages/ErrorPage";
-import { api } from "./api.jsx";
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import App from "../App.jsx";
+import { ArticleSinglePage } from "../pages/ArticleSinglePage.jsx";
+import { ArticleEditPage } from "../pages/ArticleEditPage.jsx";
+import { ArticlesListPage } from "../pages/ArticlesListPage.jsx";
+import { AboutPage } from "../pages/AboutPage.jsx";
+import { ProfilePage } from "../pages/ProfilePage.jsx";
+import { RegisterPage } from "../pages/RegisterPage.jsx";
+import { Authorization, AuthorizationAdmin } from "./Authorization.jsx";
+import ErrorPage from "../pages/ErrorPage.jsx";
+import { useAppContext } from "./appContext.jsx";
 
-export const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <App />,
-    handle: {
-      crumb: (_, isLast) => <>{isLast ? "Home" : <a href="/">Home</a>}</>,
+export const Router = () => {
+  const { api } = useAppContext();
+
+  const browserRouter = createBrowserRouter([
+    {
+      path: "/",
+      element: <App />,
+      handle: {
+        crumb: (_, isLast) => <>{isLast ? "Home" : <a href="/">Home</a>}</>,
+      },
+
+      children: [
+        {
+          //authenticated admin routes
+          element: <AuthorizationAdmin />,
+          children: [
+            {
+              path: "create",
+              element: <ArticleEditPage />,
+              handle: {
+                crumb: () => "New Article",
+              },
+            },
+            {
+              path: "/edit/:id",
+              element: <ArticleEditPage />,
+              handle: {
+                crumb: () => "Edit",
+              },
+            },
+          ],
+        },
+        {
+          //authenticated all users routes
+          element: <Authorization />,
+          children: [
+            {
+              path: "/user/profile",
+              element: <ProfilePage />,
+              handle: {
+                crumb: () => "Profile",
+              },
+            },
+          ],
+        },
+        {
+          path: "/",
+          element: <ArticlesListPage />,
+        },
+        {
+          path: "/articles",
+          element: <ArticlesListPage />,
+        },
+        {
+          path: "/articles/categories/:category",
+          element: <ArticlesListPage />,
+          loader: ({ params }) => {
+            return params.category;
+          },
+          handle: {
+            crumb: (loaderData, isLast) => (
+              <>{isLast ? loaderData : <a href="/">loaderData</a>}</>
+            ),
+          },
+        },
+        {
+          path: "/articles/:articleUrlId",
+          element: <ArticleSinglePage />,
+          loader: async ({ params }) => {
+            return await api.articles.getArticle(params.articleUrlId); //id in path
+          },
+          handle: {
+            crumb: (loaderData) => loaderData.title, //loaderData returned from loader
+          },
+        },
+
+        {
+          path: "/register",
+          element: <RegisterPage />,
+          handle: {
+            crumb: () => "Register",
+          },
+        },
+
+        {
+          path: "/about",
+          element: <AboutPage />,
+          handle: {
+            crumb: () => "About",
+          },
+        },
+        {
+          path: "*",
+          element: <ErrorPage message="Page not found" />,
+          handle: {
+            crumb: () => "Error",
+          },
+        }, //other routes
+      ],
     },
+  ]);
 
-    children: [
-      {
-        //authenticated routes
-        element: <Authorization />,
-        children: [
-          {
-            path: "create",
-            element: <ArticleEditPage />,
-            handle: {
-              crumb: () => "New Article",
-            },
-          },
-          {
-            path: "/edit/:id",
-            element: <ArticleEditPage />,
-            handle: {
-              crumb: () => "Edit",
-            },
-          },
-        ],
-      },
-      {
-        path: "/",
-        element: <ArticlesListPage />,
-      },
-      {
-        path: "/articles",
-        element: <ArticlesListPage />,
-      },
-      {
-        path: "/articles/categories/:category",
-        element: <ArticlesListPage />,
-        loader: async ({ params }) => {
-          return params.category;
-        },
-        handle: {
-          crumb: (loaderData, isLast) => (
-            <>{isLast ? loaderData : <a href="/">loaderData</a>}</>
-          ),
-        },
-      },
-      {
-        path: "/articles/:articleUrlId",
-        element: <ArticleSinglePage />,
-        loader: async ({ params }) => {
-          return await api.articles.getArticle(params.articleUrlId); //id in path
-        },
-        handle: {
-          crumb: (loaderData) => loaderData.title, //loaderData returned from loader
-        },
-      },
-
-      {
-        path: "/register",
-        element: <RegisterPage />,
-        handle: {
-          crumb: () => "Register",
-        },
-      },
-      {
-        path: "/user/profile",
-        element: <ProfilePage />,
-        handle: {
-          crumb: () => "Profile",
-        },
-      },
-      {
-        path: "/about",
-        element: <AboutPage />,
-        handle: {
-          crumb: () => "About",
-        },
-      },
-      {
-        path: "*",
-        element: <ErrorPage message="Page not found" />,
-        handle: {
-          crumb: () => "Error",
-        },
-      }, //other routes
-    ],
-  },
-]);
+  return <RouterProvider router={browserRouter} />;
+};

@@ -23,7 +23,7 @@ export default function ErrorPage({ message }) {
             className="d-flex justify-content-center align-items-center"
             style={{ height: "90vh" }}
           >
-            <h1>{state.message ?? message}</h1>
+            <h1>{state?.message ?? message}</h1>
           </div>
         </Col>
       </Row>

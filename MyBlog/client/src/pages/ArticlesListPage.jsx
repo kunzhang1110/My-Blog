@@ -14,10 +14,9 @@ import { SideBar } from "../components/SideBar";
 import { Spinner } from "../components/Spinner";
 import { ScrollUpArrow } from "../components/ScrollUpArrow";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
-import { api } from "../app/api";
 import { AppPagination } from "../components/AppPagination";
-import { useAuth } from "../app/auth";
 import { FaNewspaper, FaArchive, FaCommentDots } from "react-icons/fa";
+import { useAppContext } from "../app/appContext";
 
 export const ArticleList = ({
   articlesList,
@@ -32,11 +31,7 @@ export const ArticleList = ({
     setOrderby(orderString);
   };
 
-  const ArticleListHeaderButton = ({ Icon, iconSize, orderByString, text }) => {
-    console.log(
-      "article-list-header-buttons " +
-        (orderBy === orderByString ? "focus" : "")
-    );
+  const ArticleListTopButton = ({ Icon, iconSize, orderByString, text }) => {
     return (
       <Button
         outline
@@ -58,19 +53,19 @@ export const ArticleList = ({
         <Card className="m-1">
           <CardBody>
             <ButtonGroup>
-              <ArticleListHeaderButton
+              <ArticleListTopButton
                 Icon={FaArchive}
                 iconSize={28}
                 orderByString={"dateAsc"}
                 text="Oldest"
               />
-              <ArticleListHeaderButton
+              <ArticleListTopButton
                 Icon={FaNewspaper}
                 iconSize={35}
                 orderByString={"dateDesc"}
                 text="Newest"
               />
-              <ArticleListHeaderButton
+              <ArticleListTopButton
                 Icon={FaCommentDots}
                 iconSize={30}
                 orderByString={"mostCommented"}
@@ -102,17 +97,16 @@ export const ArticleList = ({
 
 export const ArticlesListPage = () => {
   const [articlesList, setArticlesList] = useState([]);
-  const [paginationData, setPaginationData] = useState({});
-  const [isLoading, setIsLoading] = useState(true);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [paginationData, setPaginationData] = useState({});
+  const { api } = useAppContext();
   const { category } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
 
   const updateArticlesList = (category, pageNumber, orderBy = "dateAsc") => {
-    console.log(orderBy);
     api.articles
-      .getArticles(category, user.authorizationHeader, pageNumber, orderBy)
+      .getArticles(category, pageNumber, orderBy)
       .then((resp) => {
         if (resp.status == "400") {
           navigate("/error", {
@@ -136,7 +130,7 @@ export const ArticlesListPage = () => {
     document.title = "Kun's Blog - " + (category ? category : "Home");
     setIsLoading(true);
     updateArticlesList(category, 1);
-  }, [category, user]);
+  }, [category]);
 
   useEffect(() => {
     if (isAlertOpen) {

@@ -6,8 +6,8 @@ import {
   DEFAULT_INPUT,
   validateInput,
 } from "./InputWithValidation";
-import { useAuth } from "../app/auth";
-import { api } from "../app/api";
+
+import { useAppContext } from "../app/appContext";
 
 export const CommentEdit = ({
   articleId,
@@ -18,7 +18,7 @@ export const CommentEdit = ({
   isEditMode = false,
 }) => {
   const [newComment, setNewComment] = useState(DEFAULT_INPUT);
-  const { user } = useAuth();
+  const { api, user } = useAppContext();
 
   useEffect(() => {
     setNewComment({
@@ -49,7 +49,7 @@ export const CommentEdit = ({
 
       if (isEditMode) {
         api.comments
-          .updateComment(newCommentDto, user.authorizationHeader)
+          .updateComment(newCommentDto)
           .then((resp) => {
             return resp.json();
           })
@@ -59,7 +59,7 @@ export const CommentEdit = ({
           });
       } else {
         api.comments
-          .createComment(newCommentDto, user.authorizationHeader)
+          .createComment(newCommentDto)
           .then((resp) => {
             return resp.json();
           })

@@ -1,23 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useLoaderData, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import { ArticleCard } from "../components/ArticleCard";
 import { Spinner } from "../components/Spinner";
 import { ScrollUpArrow } from "../components/ScrollUpArrow";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
-import { api } from "../app/api";
-import { useAuth } from "../app/auth";
+import { useAppContext } from "../app/appContext";
 
 export const ArticleSinglePage = () => {
   const [article, setArticle] = useState("");
-  const loaderData = useLoaderData();
+  const { api } = useAppContext();
   const { articleUrlId } = useParams();
-  const { user } = useAuth();
 
   const updateArticle = () => {
-    api.articles
-      .getArticle(articleUrlId, user.authorizationHeader)
-      .then((data) => setArticle(data));
+    api.articles.getArticle(articleUrlId).then((data) => setArticle(data));
   };
 
   useEffect(() => {

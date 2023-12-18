@@ -7,7 +7,7 @@ import {
   InputWithValidation,
 } from "../components/InputWithValidation";
 import { Spinner } from "../components/Spinner";
-import { api } from "../app/api";
+import { useAppContext } from "../app/appContext";
 
 export const RegisterPage = () => {
   const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);
@@ -16,6 +16,7 @@ export const RegisterPage = () => {
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { api } = useAppContext();
 
   const registerHandler = () => {
     setIsLoading(true);

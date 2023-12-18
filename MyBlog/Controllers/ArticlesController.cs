@@ -8,8 +8,6 @@ using My_Blog.Services;
 using My_Blog.Models.Articles;
 using My_Blog.Utils;
 using Microsoft.CodeAnalysis;
-using Microsoft.AspNetCore.Identity;
-using MyBlog.Models.Account;
 using System.Security.Claims;
 
 

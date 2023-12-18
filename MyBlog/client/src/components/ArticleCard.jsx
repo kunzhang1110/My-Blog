@@ -18,11 +18,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { VscEllipsis } from "react-icons/vsc";
 import { GoEye, GoComment } from "react-icons/go";
 import { MdDateRange } from "react-icons/md";
-import { useAuth } from "../app/auth.jsx";
 import { Spinner } from "./Spinner";
 import { Tag } from "./Tag";
 import { AppReactMarkdown } from "./AppReactMarkdown.jsx";
-import { api } from "../app/api.jsx";
+import { useAppContext } from "../app/appContext.jsx";
 import { CommentsList } from "./CommentsList.jsx";
 import UseAnimations from "react-useanimations";
 import Thumbup from "react-useanimations/lib/thumbUp";
@@ -45,8 +44,10 @@ export const ArticleCard = ({
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, api } = useAppContext();
   const isInAriclePage = articleUrlId ?? false;
+
+  console.log(article);
 
   useEffect(() => {
     setIsCommentOpen(isInAriclePage);
@@ -57,7 +58,7 @@ export const ArticleCard = ({
     if (collapsed) {
       setIsLoading(true);
       api.articles
-        .getArticle(article.id, user.authorizationHeader)
+        .getArticle(article.id)
         .then((data) => {
           setBody(data.body);
           setCollapsed(false);
@@ -77,31 +78,27 @@ export const ArticleCard = ({
 
   const deleteArticle = () => {
     setIsDeleting(true);
-    api.articles
-      .deleteArticle(article.id, user.authorizationHeader)
-      .then(() => {
-        toggleModal();
-        setIsDeleting(false);
+    api.articles.deleteArticle(article.id).then(() => {
+      toggleModal();
+      setIsDeleting(false);
+      if (isInAriclePage) {
+        updatePageComponent();
+      } else {
+        updatePageComponent(paginationData.currentPage);
+      }
+    });
+  };
+
+  const handleToggleLike = () => {
+    api.articles.toggleLike(article.id).then((res) => {
+      if (res.status === 204 || res.status === 200) {
         if (isInAriclePage) {
           updatePageComponent();
         } else {
           updatePageComponent(paginationData.currentPage);
         }
-      });
-  };
-
-  const handleToggleLike = () => {
-    api.articles
-      .toggleLike(article.id, user.authorizationHeader)
-      .then((res) => {
-        if (res.status === 204 || res.status === 200) {
-          if (isInAriclePage) {
-            updatePageComponent();
-          } else {
-            updatePageComponent(paginationData.currentPage);
-          }
-        }
-      });
+      }
+    });
   };
 
   return (
@@ -253,7 +250,8 @@ export const ArticleCard = ({
           ></div>
           <UseAnimations
             animation={Thumbup}
-            onClick={handleToggleLike}
+            onClick={user.userName != "" ? handleToggleLike : null}
+            disabled={user.userName === ""}
             reverse={article.isLikedByUser}
             render={(eventProps, animationProps) => (
               <Button
