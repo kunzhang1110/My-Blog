@@ -15,9 +15,9 @@ export const ProfilePage = () => {
   const [paginationData, setPaginationData] = useState({});
   const navigate = useNavigate();
 
-  const updateArticlesList = (pageNumber) => {
+  const updateArticlesList = (pageNumber, orderBy) => {
     api.articles
-      .GetArticlesByUserCommentedOrLiked(user.userId, pageNumber)
+      .GetArticlesByUserCommentedOrLiked(user.userId, pageNumber, orderBy)
       .then((resp) => {
         if (resp.status == "400") {
           navigate("/error", {
@@ -82,7 +82,7 @@ export const ProfilePage = () => {
                 <ArticleList
                   articlesList={articlesList}
                   paginationData={paginationData ?? null}
-                  updateArticlesList={(p) => updateArticlesList(p)}
+                  updateArticlesList={updateArticlesList}
                 />
               </CardBody>
             </Card>

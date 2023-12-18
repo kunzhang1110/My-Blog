@@ -102,8 +102,18 @@ namespace MyBlog.Controllers
                 .Include(a => a.ArticleTags)
                 .ThenInclude(at => at.Tag)
                 .Include(a => a.ArticleLikes)
-                .SortByDate(pageParams.OrderBy)
-                .FilterCategory(pageParams.CategoryName);
+                .Include(a => a.Comments)
+                .FilterCategory(pageParams.CategoryName)
+                .AsQueryable();
+
+            if (pageParams.OrderBy!.Contains("date"))
+            {
+                query = query.SortByDate(pageParams.OrderBy);
+            }
+            else
+            {
+                query = query.OrderByDescending(a => a.Comments.Count);
+            }
 
             var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
 
@@ -177,6 +187,16 @@ namespace MyBlog.Controllers
                .Where(a => (a.Comments.Any(comment => comment.UserId == userId))
                             || (a.ArticleLikes.Any(articleLike => articleLike.UserId == userId)))
                .AsQueryable();
+
+            if (pageParams.OrderBy!.Contains("date"))
+            {
+                query = query.SortByDate(pageParams.OrderBy);
+            }
+            else
+            {
+                query = query.OrderByDescending(a => a.Comments.Count);
+            }
+
 
             var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
             if (articles == null) return BadRequest();

@@ -105,8 +105,8 @@ export const ArticleCard = ({
   };
 
   return (
-    <Card className="m-2">
-      <CardBody className="m-3">
+    <Card className="m-1">
+      <CardBody className="m-2">
         <Row>
           <Col xs="11">
             <h1

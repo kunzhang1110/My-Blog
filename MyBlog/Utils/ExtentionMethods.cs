@@ -67,6 +67,7 @@ namespace My_Blog.Utils
             return query;
         }
 
+
         public static IQueryable<Article> FilterCategory(this IQueryable<Article> query, string? category)
         {
             if (!string.IsNullOrEmpty(category)) //filter results by category

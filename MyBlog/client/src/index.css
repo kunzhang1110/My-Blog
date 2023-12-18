@@ -27,6 +27,32 @@ textarea {
   overflow: scroll;
 }
 
+.article-list-header-buttons {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 10px;
+  border-color: #ffffff;
+}
+
+.article-list-header-buttons:hover {
+  color: grey;
+  border-color: #ffffff;
+  background-color: #eeeeee;
+}
+
+.article-list-header-buttons:focus {
+  box-shadow: none;
+}
+
+.article-list-header-buttons.focus svg {
+  fill: #0d6efd;
+}
+
+.article-list-header-buttons span {
+  font-size: 1.1rem;
+  margin-left: 10px;
+}
+
 .page-breadbrumb {
   position: sticky;
   top: calc(var(--side-bar-sticky-top-position) - 20px);
