@@ -14,9 +14,9 @@ import {
   ModalFooter,
   ButtonGroup,
 } from "reactstrap";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { VscEllipsis } from "react-icons/vsc";
-import { GoEye, GoComment, GoThumbsup } from "react-icons/go";
+import { GoEye, GoComment } from "react-icons/go";
 import { MdDateRange } from "react-icons/md";
 import { useAuth } from "../app/auth.jsx";
 import { Spinner } from "./Spinner";
@@ -24,11 +24,18 @@ import { Tag } from "./Tag";
 import { AppReactMarkdown } from "./AppReactMarkdown.jsx";
 import { api } from "../app/api.jsx";
 import { CommentsList } from "./CommentsList.jsx";
+import UseAnimations from "react-useanimations";
+import Thumbup from "react-useanimations/lib/thumbUp";
 
 //React Markdown common components
 export const rmComponents = {};
 
-export const ArticleCard = ({ article }) => {
+export const ArticleCard = ({
+  article,
+  updatePageComponent,
+  paginationData,
+  articleUrlId,
+}) => {
   const imageDirectory = `UserData/${article.id}`;
   const [collapsed, setCollapsed] = useState(true);
   const [body, setBody] = useState("");
@@ -38,10 +45,8 @@ export const ArticleCard = ({ article }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
-  const { pageNumber, id } = useParams();
   const { user } = useAuth();
-
-  const isInAriclePage = id ?? false;
+  const isInAriclePage = articleUrlId ?? false;
 
   useEffect(() => {
     setIsCommentOpen(isInAriclePage);
@@ -52,7 +57,7 @@ export const ArticleCard = ({ article }) => {
     if (collapsed) {
       setIsLoading(true);
       api.articles
-        .getArticle(article.id)
+        .getArticle(article.id, user.authorizationHeader)
         .then((data) => {
           setBody(data.body);
           setCollapsed(false);
@@ -77,13 +82,25 @@ export const ArticleCard = ({ article }) => {
       .then(() => {
         toggleModal();
         setIsDeleting(false);
-
-        if (pageNumber != null) {
-          navigate(`/articles/page/${pageNumber}`);
+        if (isInAriclePage) {
+          updatePageComponent();
         } else {
-          navigate(`/`);
+          updatePageComponent(paginationData.currentPage);
         }
-        navigate(0);
+      });
+  };
+
+  const handleToggleLike = () => {
+    api.articles
+      .toggleLike(article.id, user.authorizationHeader)
+      .then((res) => {
+        if (res.status === 204 || res.status === 200) {
+          if (isInAriclePage) {
+            updatePageComponent();
+          } else {
+            updatePageComponent(paginationData.currentPage);
+          }
+        }
       });
   };
 
@@ -92,7 +109,6 @@ export const ArticleCard = ({ article }) => {
       <CardBody className="m-3">
         <Row>
           <Col xs="11">
-            {/* <a href={`/articles/${article.id}`} className="a-article-card-title"> */}
             <h1
               onClick={() => {
                 if (!isInAriclePage) navigate(`/articles/${article.id}`);
@@ -152,7 +168,7 @@ export const ArticleCard = ({ article }) => {
                   </ModalFooter>
                 </Modal>
                 <DropdownItem divider />
-                {id ? (
+                {isInAriclePage ? (
                   <DropdownItem
                     onClick={(e) => {
                       e.preventDefault();
@@ -198,7 +214,7 @@ export const ArticleCard = ({ article }) => {
           }}
           deps={[collapsed, article, body]}
         />
-        {id ? (
+        {isInAriclePage ? (
           <></>
         ) : (
           <Row>
@@ -213,12 +229,16 @@ export const ArticleCard = ({ article }) => {
             </Link>
           </Row>
         )}
-        <ButtonGroup className="my-3">
+        <ButtonGroup className="my-3" style={{ alignItems: "center" }}>
           <Button
             color="transparent"
             onClick={() => setIsCommentOpen(!isCommentOpen)}
-            tag="span"
-            style={{ paddingLeft: "0px" }}
+            tag="div"
+            style={{
+              paddingLeft: "0px",
+              display: "inline-flex",
+              alignItems: "center",
+            }}
           >
             <GoComment
               style={{ marginRight: "8px", height: "20px", width: "20px" }}
@@ -228,22 +248,38 @@ export const ArticleCard = ({ article }) => {
           <div
             style={{
               borderLeft: "1px solid grey",
-              height: "20px",
-              marginTop: "10px",
-              marginRight: "10px",
+              height: "18px",
             }}
           ></div>
-          <Button color="transparent" tag="span">
-            <GoThumbsup
-              style={{
-                marginRight: "8px",
-                height: "20px",
-                width: "20px",
-                marginBottom: "5px",
-              }}
-            />{" "}
-            Like
-          </Button>
+          <UseAnimations
+            animation={Thumbup}
+            onClick={handleToggleLike}
+            reverse={article.isLikedByUser}
+            render={(eventProps, animationProps) => (
+              <Button
+                color="transparent"
+                tag="div"
+                {...eventProps}
+                style={{ display: "inline-flex", alignItems: "center" }}
+              >
+                <div
+                  {...animationProps}
+                  style={{
+                    display: "inline-block",
+                    marginRight: "8px",
+                    marginBottom: "5px",
+                    height: "26px",
+                  }}
+                />
+                <span style={{ marginRight: "2px" }}>Like</span>
+                <span>
+                  {article.numberOfLikes != 0
+                    ? `(${article.numberOfLikes})`
+                    : ""}
+                </span>
+              </Button>
+            )}
+          />
         </ButtonGroup>
         {isCommentOpen ? <CommentsList articleId={article.id} /> : <></>}
       </CardBody>

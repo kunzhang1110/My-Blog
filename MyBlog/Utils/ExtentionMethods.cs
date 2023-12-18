@@ -23,17 +23,20 @@ namespace My_Blog.Utils
         /// Convert Article to ArticleDTO. If shouldGetSummary is true, the body of the article is a summary.
         /// </summary>
         /// <param name="shouldGetSummary">If true, the body of the article is a summary. Default false</param>
-        public static ArticleDto ToAritcleDto(this Article article, List<string>? imageUrls, bool shouldGetSummary = false)
+        public static ArticleDto ToAritcleDto(this Article article, List<string>? imageUrls, int? userId, bool shouldGetSummary = false)
         {
+            var temp = article.ArticleLikes.Any(articleLike => articleLike.UserId == userId);
             return new ArticleDto()
             {
                 Id = article.Id,
                 Date = article.Date,
                 Title = article.Title,
                 Body = shouldGetSummary ? GetSummary(article.Body) : article.Body,
-                Views = article.Views,
+                Views = article.Views ?? 0,
                 Tags = article.ArticleTags.Select(at => at.Tag).ToList(),
-                ImageUrls = imageUrls?.Count > 0 ? imageUrls : null
+                ImageUrls = imageUrls?.Count > 0 ? imageUrls : null,
+                NumberOfLikes = article.ArticleLikes.Count,
+                IsLikedByUser = userId != null && article.ArticleLikes.Any(articleLike => articleLike.UserId == userId)
             };
         }
 

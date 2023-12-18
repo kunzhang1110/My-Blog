@@ -61,10 +61,10 @@ export const router = createBrowserRouter([
         },
       },
       {
-        path: "/articles/:id",
+        path: "/articles/:articleUrlId",
         element: <ArticleSinglePage />,
         loader: async ({ params }) => {
-          return await api.articles.getArticle(params.id); //id in path
+          return await api.articles.getArticle(params.articleUrlId); //id in path
         },
         handle: {
           crumb: (loaderData) => loaderData.title, //loaderData returned from loader

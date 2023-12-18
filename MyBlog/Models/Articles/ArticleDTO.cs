@@ -6,10 +6,10 @@
         public DateTime? Date { get; set; }
         public string Title { get; set; } = null!;
         public string Body { get; set; } = null!;
-        public int? Views { get; set; }
-
+        public int Views { get; set; }
+        public int NumberOfLikes { get; set; }
+        public bool IsLikedByUser { get; set; }=false;
         public IEnumerable<string>? ImageUrls { get; set; }
-
-        public virtual ICollection<Tag?> Tags { get; set; } = new HashSet<Tag?>();
+        public ICollection<Tag>? Tags { get; set; } = new HashSet<Tag>();
     }
 }

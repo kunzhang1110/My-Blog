@@ -23,17 +23,25 @@ const account = {
 };
 
 const articles = {
-  getArticle: (id) => fetch(`/api/articles/${id}`).then((res) => res.json()),
+  getArticle: (id, headers) =>
+    fetch(`/api/articles/${id}`, { headers }).then((res) => res.json()),
 
-  getArticles: async (categoryName, pageNumber = 1, orderBy = "dateAsc") => {
+  getArticles: async (
+    categoryName,
+    headers,
+    pageNumber = 1,
+    orderBy = "dateAsc"
+  ) => {
     let params = {
       orderBy,
       pageNumber,
     };
+
     if (categoryName) params.categoryName = categoryName;
 
     const response = await fetch(
-      `/api/articles?` + new URLSearchParams(params)
+      `/api/articles?` + new URLSearchParams(params),
+      { headers }
     );
     return response;
   },
@@ -42,8 +50,8 @@ const articles = {
     fetch(`/api/articles`, {
       method: "POST",
       body: formData,
-      headers,
       cache: "default",
+      headers,
     }),
 
   updateArticle: (formData, id, headers) =>
@@ -65,7 +73,13 @@ const articles = {
       method: "GET",
     }).then((res) => res.json()),
 
-  getArticlesByUserCommented: async (
+  toggleLike: (articleId, headers) =>
+    fetch(`/api/articles/toggleLike/${articleId}`, {
+      method: "POST",
+      headers,
+    }),
+
+  GetArticlesByUserCommentedOrLiked: async (
     userId,
     pageNumber = 1,
     orderBy = "dateAsc"
@@ -76,7 +90,7 @@ const articles = {
     };
 
     const response = await fetch(
-      `/api/articles/getArticlesByUserCommented/${userId}?` +
+      `/api/articles/GetArticlesByUserCommentedOrLiked/${userId}?` +
         new URLSearchParams(params)
     );
     return response;

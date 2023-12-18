@@ -1,18 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { useLoaderData } from "react-router-dom";
+import { useLoaderData, useParams } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import { ArticleCard } from "../components/ArticleCard";
 import { Spinner } from "../components/Spinner";
 import { ScrollUpArrow } from "../components/ScrollUpArrow";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
+import { api } from "../app/api";
+import { useAuth } from "../app/auth";
 
 export const ArticleSinglePage = () => {
   const [article, setArticle] = useState("");
   const loaderData = useLoaderData();
+  const { articleUrlId } = useParams();
+  const { user } = useAuth();
+
+  const updateArticle = () => {
+    api.articles
+      .getArticle(articleUrlId, user.authorizationHeader)
+      .then((data) => setArticle(data));
+  };
 
   useEffect(() => {
-    setArticle(loaderData);
-  }, [loaderData]);
+    updateArticle();
+  }, []);
 
   return (
     <>
@@ -28,7 +38,11 @@ export const ArticleSinglePage = () => {
         >
           <AppBreadCrumb />
           {article !== "" ? (
-            <ArticleCard article={article} />
+            <ArticleCard
+              article={article}
+              updatePageComponent={updateArticle}
+              articleUrlId={articleUrlId}
+            />
           ) : (
             <Spinner fullPage />
           )}

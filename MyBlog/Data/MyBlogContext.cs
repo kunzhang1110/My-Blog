@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using MyBlog.Models.Articles;
 using MyBlog.Models.Account;
+using My_Blog.Models.Articles;
 
 namespace My_Blog.Data
 {
@@ -25,6 +26,8 @@ namespace My_Blog.Data
         public virtual DbSet<Tag> Tags { get; set; } = null!;
         public virtual DbSet<ArticleTag> ArticleTags { get; set; } = null!;
         public virtual DbSet<Comment> Comments { get; set; } = null!;
+        public virtual DbSet<ArticleLike> ArticleLikes { get; set; } = null!;
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
@@ -75,6 +78,22 @@ namespace My_Blog.Data
                 entity.HasOne(comment => comment.User)
                     .WithMany(user => user.Comments)
                     .HasForeignKey(comment => comment.UserId)
+                    .IsRequired();
+            });
+
+
+            builder.Entity<ArticleLike>(entity =>
+            {
+                entity.ToTable("MyBlogArticleLikes");
+
+                entity.HasOne(articleLike => articleLike.Article)
+                    .WithMany(article => article.ArticleLikes)
+                    .HasForeignKey(articleLike => articleLike.ArticleId)
+                    .IsRequired();
+
+                entity.HasOne(articleLike => articleLike.User)
+                    .WithMany(user => user.ArticleLikes)
+                    .HasForeignKey(articleLike => articleLike.UserId)
                     .IsRequired();
             });
 

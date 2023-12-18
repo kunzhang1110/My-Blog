@@ -12,7 +12,7 @@ using My_Blog.Data;
 namespace My_Blog.Migrations
 {
     [DbContext(typeof(MyBlogContext))]
-    [Migration("20231201003209_InitialCreate")]
+    [Migration("20231217221843_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -127,6 +127,29 @@ namespace My_Blog.Migrations
                     b.ToTable("AspNetUserTokens", null, t => t.ExcludeFromMigrations());
                 });
 
+            modelBuilder.Entity("My_Blog.Models.Articles.ArticleLike", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("ArticleId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ArticleId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("MyBlogArticleLikes", (string)null);
+                });
+
             modelBuilder.Entity("MyBlog.Models.Account.Role", b =>
                 {
                     b.Property<int>("Id")
@@ -155,22 +178,6 @@ namespace My_Blog.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", null, t => t.ExcludeFromMigrations());
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            ConcurrencyStamp = "e70548eb-64f3-4be7-94a6-af9a5bcbeb5b",
-                            Name = "Member",
-                            NormalizedName = "MEMBER"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            ConcurrencyStamp = "afae5d21-ff65-4cfe-b2d4-a71c1774f359",
-                            Name = "Admin",
-                            NormalizedName = "ADMIN"
-                        });
                 });
 
             modelBuilder.Entity("MyBlog.Models.Account.User", b =>
@@ -276,20 +283,15 @@ namespace My_Blog.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("ArticleId")
+                    b.Property<int>("ArticleId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CommentId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TagId")
+                    b.Property<int>("TagId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ArticleId");
-
-                    b.HasIndex("CommentId");
 
                     b.HasIndex("TagId");
 
@@ -328,13 +330,14 @@ namespace My_Blog.Migrations
 
             modelBuilder.Entity("MyBlog.Models.Articles.Tag", b =>
                 {
-                    b.Property<int?>("Id")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int?>("Id"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasMaxLength(225)
                         .HasColumnType("nvarchar(225)");
 
@@ -394,20 +397,38 @@ namespace My_Blog.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("My_Blog.Models.Articles.ArticleLike", b =>
+                {
+                    b.HasOne("MyBlog.Models.Articles.Article", "Article")
+                        .WithMany("ArticleLikes")
+                        .HasForeignKey("ArticleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyBlog.Models.Account.User", "User")
+                        .WithMany("ArticleLikes")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Article");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("MyBlog.Models.Articles.ArticleTag", b =>
                 {
                     b.HasOne("MyBlog.Models.Articles.Article", "Article")
                         .WithMany("ArticleTags")
                         .HasForeignKey("ArticleId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("MyBlog.Models.Articles.Comment", null)
-                        .WithMany("ArticleTags")
-                        .HasForeignKey("CommentId");
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("MyBlog.Models.Articles.Tag", "Tag")
                         .WithMany("ArticleTags")
-                        .HasForeignKey("TagId");
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Article");
 
@@ -435,19 +456,18 @@ namespace My_Blog.Migrations
 
             modelBuilder.Entity("MyBlog.Models.Account.User", b =>
                 {
+                    b.Navigation("ArticleLikes");
+
                     b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("MyBlog.Models.Articles.Article", b =>
                 {
+                    b.Navigation("ArticleLikes");
+
                     b.Navigation("ArticleTags");
 
                     b.Navigation("Comments");
-                });
-
-            modelBuilder.Entity("MyBlog.Models.Articles.Comment", b =>
-                {
-                    b.Navigation("ArticleTags");
                 });
 
             modelBuilder.Entity("MyBlog.Models.Articles.Tag", b =>

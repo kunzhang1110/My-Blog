@@ -3,7 +3,7 @@ import ErrorPage from "../pages/ErrorPage";
 import { Outlet } from "react-router-dom";
 import { api } from "./api";
 
-const AuthContext = createContext(null);
+export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState({

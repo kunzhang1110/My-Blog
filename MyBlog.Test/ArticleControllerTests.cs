@@ -17,6 +17,7 @@ namespace MyBlog.Test
             var mockContext = new Mock<MyBlogContext>(""); //empty connection string
             mockContext.Setup((context) => context.SaveChangesAsync(default)).Returns(Task.FromResult(1)).Verifiable();
             _output = output;
+            _imageService = new ImageService();
             _controller = new ArticlesController(mockContext.Object, _imageService);
         }
 

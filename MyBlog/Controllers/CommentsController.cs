@@ -5,11 +5,8 @@ using MyBlog.Models.Articles;
 using My_Blog.Data;
 using Microsoft.CodeAnalysis;
 using System.Security.Claims;
-using System.Xml.Linq;
 using My_Blog.Models.Articles;
 using My_Blog.Utils;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
-using System.Text.Json;
 using Microsoft.AspNetCore.Identity;
 using MyBlog.Models.Account;
 
@@ -121,13 +118,16 @@ namespace MyBlog.Controllers
             var comments = await PagedList<Comment>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
 
             var commentDtos = new List<CommentDto>();
-            foreach (var comment in comments)
+            if (comments != null)
             {
-                var user = await _userManager.FindByIdAsync(comment.UserId.ToString());
-                commentDtos.Add(comment.ToCommentDto(user.UserName));
-            }
+                foreach (var comment in comments)
+                {
+                    var user = await _userManager.FindByIdAsync(comment.UserId.ToString());
+                    commentDtos.Add(comment.ToCommentDto(user.UserName));
+                }
 
-            Response.AddPaginationHeader(comments.PaginationData);
+                Response.AddPaginationHeader(comments.PaginationData);
+            }
 
             return Ok(commentDtos);
         }

@@ -31,11 +31,37 @@ namespace My_Blog.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(225)", maxLength: 225, nullable: true)
+                    Name = table.Column<string>(type: "nvarchar(225)", maxLength: 225, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_MyBlogTags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MyBlogArticleLikes",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    ArticleId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MyBlogArticleLikes", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MyBlogArticleLikes_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_MyBlogArticleLikes_MyBlogArticles_ArticleId",
+                        column: x => x.ArticleId,
+                        principalTable: "MyBlogArticles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,9 +98,8 @@ namespace My_Blog.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ArticleId = table.Column<int>(type: "int", nullable: true),
-                    TagId = table.Column<int>(type: "int", nullable: true),
-                    CommentId = table.Column<int>(type: "int", nullable: true)
+                    ArticleId = table.Column<int>(type: "int", nullable: false),
+                    TagId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -86,26 +111,27 @@ namespace My_Blog.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_MyBlogArticleTag_MyBlogComments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "MyBlogComments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
                         name: "FK_MyBlogArticleTag_MyBlogTags_TagId",
                         column: x => x.TagId,
                         principalTable: "MyBlogTags",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MyBlogArticleLikes_ArticleId",
+                table: "MyBlogArticleLikes",
+                column: "ArticleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MyBlogArticleLikes_UserId",
+                table: "MyBlogArticleLikes",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MyBlogArticleTag_ArticleId",
                 table: "MyBlogArticleTag",
                 column: "ArticleId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_MyBlogArticleTag_CommentId",
-                table: "MyBlogArticleTag",
-                column: "CommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MyBlogArticleTag_TagId",
@@ -125,6 +151,9 @@ namespace My_Blog.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "MyBlogArticleLikes");
+
             migrationBuilder.DropTable(
                 name: "MyBlogArticleTag");
 

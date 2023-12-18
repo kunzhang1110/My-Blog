@@ -28,10 +28,6 @@ import { api } from "../app/api.jsx";
 /** Create and update articles. If address contains id, then update; otherwise, create.
  * Use live markdown preview currently, bodyPreview is not in use. Live preview uses more browser resources*/
 export const ArticleEditPage = () => {
-  // const [bodyPreview, setBodyPreview] = useState({
-  //   ...DEFAULT_INPUT,
-  //   text: "Preview",
-  // });
   const [title, setTitle] = useState(DEFAULT_INPUT);
   const [body, setBody] = useState({ ...DEFAULT_INPUT, selectionStart: -1 });
   const [images, setImages] = useState([]);
@@ -136,14 +132,14 @@ export const ArticleEditPage = () => {
       validateInput(body, setBody, "textarea")
     ) {
       setIsLoading(true);
-      const article = {
+      let article = {
         title: title.text,
         body: body.text.replaceAll(/\r/g, ""),
         viewed: 0,
         tags: JSON.stringify(tags),
       };
 
-      const formData = new FormData();
+      let formData = new FormData();
       images.forEach((img) => {
         formData.append("files", img.file); //collection of files with the same name "files"
       });
@@ -153,16 +149,17 @@ export const ArticleEditPage = () => {
       });
 
       if (id) {
+        //update article
         article["id"] = id;
         api.articles
           .updateArticle(formData, id, user.authorizationHeader)
           .then(() => navigate(`/articles/${id}`));
       } else {
+        //create article
         api.articles
           .createArticle(formData, user.authorizationHeader)
           .then((resp) => resp.json())
           .then((data) => {
-            console.log(data);
             setIsLoading(false);
             navigate(`/articles/${data.id}`);
           });

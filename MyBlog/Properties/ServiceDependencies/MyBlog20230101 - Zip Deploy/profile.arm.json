@@ -156,7 +156,7 @@
               "location": "[parameters('resourceGroupLocation')]",
               "name": "[variables('appServicePlan_name')]",
               "type": "Microsoft.Web/serverFarms",
-              "apiVersion": "2015-02-01",
+              "apiVersion": "2015-08-01",
               "kind": "linux",
               "properties": {
                 "name": "[variables('appServicePlan_name')]",

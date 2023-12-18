@@ -7,15 +7,10 @@ namespace MyBlog.Models.Articles
     [Table("MyBlogTags")]
     public class Tag
     {
-        public Tag()
-        {
-            ArticleTags = new HashSet<ArticleTag>();
-        }
-
-        public int? Id { get; set; }
-        public string? Name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; } = null!;
 
         [JsonIgnore]
-        public virtual ICollection<ArticleTag> ArticleTags { get; set; }
+        public ICollection<ArticleTag> ArticleTags { get; set; } = new HashSet<ArticleTag>();
     }
 }

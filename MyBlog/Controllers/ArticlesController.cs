@@ -8,8 +8,10 @@ using My_Blog.Services;
 using My_Blog.Models.Articles;
 using My_Blog.Utils;
 using Microsoft.CodeAnalysis;
-using System.Text.Json;
-using JsonSerializer = System.Text.Json.JsonSerializer;
+using Microsoft.AspNetCore.Identity;
+using MyBlog.Models.Account;
+using System.Security.Claims;
+
 
 namespace MyBlog.Controllers
 {
@@ -20,17 +22,17 @@ namespace MyBlog.Controllers
         private readonly MyBlogContext _context;
         private readonly ImageService _imageService;
 
+
         public ArticlesController(MyBlogContext context, ImageService imageService)
         {
             _context = context;
             _imageService = imageService;
         }
 
-
         // Add tags to DB if new and return a list of Tag Ids
-        private async Task<ICollection<int?>> GetTagIdsAsync(ICollection<Tag?> tags)
+        private async Task<ICollection<int>> GetTagIdsAsync(ICollection<Tag> tags)
         {
-            var tagIds = new List<int?>();
+            var tagIds = new List<int>();
             foreach (var tag in tags)
             {
                 if (tag == null) break;
@@ -71,15 +73,19 @@ namespace MyBlog.Controllers
                 await _context.SaveChangesAsync();
             }
 
-            List<Tag?> tags = JsonConvert.DeserializeObject<List<Tag>>(request.Tags!)!;
-            var tagIds = await GetTagIdsAsync(tags);
-            article.ArticleTags.Clear();    //delete existing tags
-            foreach (var tagId in tagIds)   //add articleTag to DB
+            List<Tag> tags = JsonConvert.DeserializeObject<List<Tag>>(request.Tags!)!;
+            if (tags != null && tags.Any())
             {
-                article!.ArticleTags.Add(new ArticleTag() { ArticleId = article.Id, TagId = tagId });
+                var tagIds = await GetTagIdsAsync(tags);
+                article.ArticleTags.Clear();    //delete existing tags
+                foreach (var tagId in tagIds)   //add articleTag to DB
+                {
+                    article!.ArticleTags.Add(new ArticleTag() { ArticleId = article.Id, TagId = tagId });
+                }
+                _context.Entry(article).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
             }
-            _context.Entry(article).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
+
             await _imageService.AddOrUpdateImagesAsync(files, article.Id);
 
             return article;
@@ -91,23 +97,22 @@ namespace MyBlog.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticles([FromQuery] PageParams pageParams)
         {
-            var articleSummaryDtos = new List<ArticleDto>();
 
             var query = _context.Articles
                 .Include(a => a.ArticleTags)
                 .ThenInclude(at => at.Tag)
+                .Include(a => a.ArticleLikes)
                 .SortByDate(pageParams.OrderBy)
                 .FilterCategory(pageParams.CategoryName);
 
             var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
 
-            if (articles.Count == 0) return BadRequest();
+            if (articles == null) return BadRequest();
 
-            foreach (var article in articles)
-            {
-                articleSummaryDtos.Add(
-                  article.ToAritcleDto(null, true));
-            }
+            var articleSummaryDtos = new List<ArticleDto>();
+            var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId)
+                ? parsedUserId : (int?)null;
+            articleSummaryDtos.AddRange(articles.Select(article => article.ToAritcleDto(null, userId, true)));
 
             Response.AddPaginationHeader(articles.PaginationData);
             return Ok(articleSummaryDtos);
@@ -122,6 +127,7 @@ namespace MyBlog.Controllers
             var article = await _context.Articles
                 .Include(a => a.ArticleTags)
                 .ThenInclude(at => at.Tag)
+                .Include(a => a.ArticleLikes)
                 .Where(a => a.Id == id).FirstOrDefaultAsync();
 
             if (article == null) return NotFound();
@@ -132,8 +138,10 @@ namespace MyBlog.Controllers
             await _context.SaveChangesAsync();
 
             var imageUrls = _imageService.GetImagesUrls(id);
+            var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId)
+                ? parsedUserId : (int?)null;
 
-            return article.ToAritcleDto(imageUrls, false);
+            return article.ToAritcleDto(imageUrls, userId, false);
         }
 
         /// <summary>
@@ -154,31 +162,28 @@ namespace MyBlog.Controllers
         /// <summary>
         /// Get a list of articles that are commented by user with user id
         /// </summary>
-        [HttpGet("GetArticlesByUserCommented/{userId}")]
-        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticlesByUserCommented(int userId, [FromQuery] PageParams pageParams)
+        [HttpGet("GetArticlesByUserCommentedOrLiked/{userId}")]
+        public async Task<ActionResult<IEnumerable<ArticleDto>>> GetArticlesByUserCommentedOrLiked(int userId, [FromQuery] PageParams pageParams)
         {
             var articleDtos = new List<ArticleDto>();
 
-            var articleIds = await _context
-                .Comments
-                .Where(comment => comment.UserId == userId)
-                .GroupBy(c => c.ArticleId).Select(c => c.Key)
-                .ToListAsync();
+
 
             var query = _context.Articles
-                .Where(a => articleIds.Contains(a.Id))
-                .AsQueryable();
+               .Include(a => a.ArticleTags)
+               .ThenInclude(at => at.Tag)
+               .Include(a => a.ArticleLikes)
+               .Include(a => a.Comments)
+               .Where(a => (a.Comments.Any(comment => comment.UserId == userId))
+                            || (a.ArticleLikes.Any(articleLike => articleLike.UserId == userId)))
+               .AsQueryable();
 
             var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
-
+            if (articles == null) return BadRequest();
 
             if (articles.Count == 0) return BadRequest();
 
-            foreach (var article in articles)
-            {
-                articleDtos.Add(
-                  article.ToAritcleDto(null, true));
-            }
+            articleDtos.AddRange(articles.Select(article => article.ToAritcleDto(null, userId, true)));
 
             Response.AddPaginationHeader(articles.PaginationData);
             return Ok(articleDtos);
@@ -186,6 +191,31 @@ namespace MyBlog.Controllers
 
         }
 
+
+        [HttpPost("ToggleLike/{articleId}")]
+        public async Task<IActionResult> ToggleLike(int articleId)
+        {
+            if (await _context.Articles.FindAsync(articleId) == null) return BadRequest(new ProblemDetails { Title = "Cannot find article id" });
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userIdString == null) return BadRequest(new ProblemDetails { Title = "Cannot find user id" });
+            var userId = int.Parse(userIdString);
+            var articleLike = await _context.ArticleLikes.SingleOrDefaultAsync(articleLike => (articleLike.UserId == userId) && (articleLike.ArticleId == articleId));
+            if (articleLike == null)
+            {
+                articleLike = new ArticleLike { ArticleId = articleId, UserId = userId };
+                _context.Add(articleLike);
+
+            }
+            else
+            {
+                _context.ArticleLikes.Remove(articleLike);
+                articleLike = null;
+            }
+            await _context.SaveChangesAsync();
+
+            return Ok(articleLike);
+
+        }
 
         [Authorize(Roles = "Admin")]
         [HttpPost]

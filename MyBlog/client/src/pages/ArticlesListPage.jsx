@@ -8,6 +8,7 @@ import { ScrollUpArrow } from "../components/ScrollUpArrow";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
 import { api } from "../app/api";
 import { AppPagination } from "../components/AppPagination";
+import { useAuth } from "../app/auth";
 
 export const ArticleList = ({
   articlesList,
@@ -19,13 +20,18 @@ export const ArticleList = ({
     <>
       <div style={{ marginTop: "20px" }}>
         {articlesList.map((article) => (
-          <ArticleCard article={article} key={article.id} />
+          <ArticleCard
+            article={article}
+            key={article.id}
+            updatePageComponent={(p) => updateArticlesList(p)}
+            paginationData={paginationData ?? null}
+          />
         ))}
       </div>
       <AppPagination
         paginationData={paginationData ?? null}
         category={category}
-        updateArticlesList={(c, p) => updateArticlesList(c, p)}
+        updateArticlesList={(p) => updateArticlesList(p)}
       />
     </>
   );
@@ -38,23 +44,22 @@ export const ArticlesListPage = () => {
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const { category } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const updateArticlesList = (category, pageNumber) => {
     api.articles
-      .getArticles(category, pageNumber)
+      .getArticles(category, user.authorizationHeader, pageNumber)
       .then((resp) => {
         if (resp.status == "400") {
           navigate("/error", {
             state: { message: "Page number exceeds max pages" },
           });
-          console.log(resp);
           return;
         }
         setPaginationData(JSON.parse(resp.headers.get("Pagination")));
         return resp.json();
       })
       .then((data) => {
-        console.log(data);
         setArticlesList(data);
         setIsLoading(false);
       })
@@ -67,7 +72,7 @@ export const ArticlesListPage = () => {
     document.title = "Kun's Blog - " + (category ? category : "Home");
     setIsLoading(true);
     updateArticlesList(category, 1);
-  }, [category]);
+  }, [category, user]);
 
   useEffect(() => {
     if (isAlertOpen) {

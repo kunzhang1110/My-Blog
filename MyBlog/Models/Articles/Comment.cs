@@ -13,9 +13,8 @@ namespace MyBlog.Models.Articles
         public DateTime? Date { get; set; }
         public string Body { get; set; } = null!;
 
-        public virtual User User { get; set; } = null!;
-
-
-        public virtual Article Article { get; set; } = null!;
+        //navigation properties
+        public User User { get; set; } = null!;
+        public Article Article { get; set; } = null!;
     }
 }

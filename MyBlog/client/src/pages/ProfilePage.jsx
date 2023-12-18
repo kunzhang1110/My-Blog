@@ -17,7 +17,7 @@ export const ProfilePage = () => {
 
   const updateArticlesList = (pageNumber) => {
     api.articles
-      .getArticlesByUserCommented(user.userId, pageNumber)
+      .GetArticlesByUserCommentedOrLiked(user.userId, pageNumber)
       .then((resp) => {
         if (resp.status == "400") {
           navigate("/error", {
@@ -62,19 +62,23 @@ export const ProfilePage = () => {
             <AppBreadCrumb />
             <Card className="m-2">
               <CardBody className="m-3">
-                <h1 className="display-2">{_captalize(user.userName)}</h1>
+                <h1 className="display-3">{_captalize(user.userName)}</h1>
                 <hr />
-                <dl className="row" style={{ fontSize: "1.5rem" }}>
-                  <dt className="col-sm-2 ">Roles:</dt>
-                  <dd className="col-sm-10 ">{user.roles.join(", ")}</dd>
-                  <dt className="col-sm-2 ">Email:</dt>
-                  <dd className="col-sm-10 ">{user.email}</dd>
-                </dl>
+                <Row>
+                  <Col sm={2}>
+                    <div style={{ fontSize: "1.2rem" }}>Roles</div>
+                    <span>{user.roles.join(", ")}</span>
+                  </Col>
+                  <Col sm={2}>
+                    <div style={{ fontSize: "1.2rem" }}>Email</div>
+                    <div>{user.email}</div>
+                  </Col>
+                </Row>
               </CardBody>
             </Card>
             <Card className="m-2">
               <CardBody className="m-3">
-                <h1 className="display-3">Commented Articles</h1>
+                <h1 className="display-4">Commented and Liked Articles</h1>
                 <ArticleList
                   articlesList={articlesList}
                   paginationData={paginationData ?? null}

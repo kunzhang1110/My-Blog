@@ -24,10 +24,10 @@ namespace MyBlog.Test
                 Date = DateTime.Now,
                 Title = "ephemeral",
                 Body = "ephemeral body",
-                Tags = new List<Tag?>() { new Tag() { Name = "ephemeral1" }, new Tag() { Name = "ephemeral2" } }
+                Tags = new List<Tag>() { new Tag() { Name = "ephemeral1" }, new Tag() { Name = "ephemeral2" } }
             };
 
-            var tagIds = new List<int?>();
+            var tagIds = new List<int>();
             foreach (var tag in articleDTO.Tags)
             {
                 if (tag == null) break;
@@ -68,11 +68,15 @@ namespace MyBlog.Test
             foreach (var article in articleDTOs)
             {
                 _output.WriteLine(article.Title);
-                foreach (var tag in article.Tags)
+                if (article.Tags != null)
                 {
-                    if (tag != null)
-                        _output.WriteLine(tag.Name);
+                    foreach (var tag in article.Tags)
+                    {
+                        if (tag != null)
+                            _output.WriteLine(tag.Name);
+                    }
                 }
+
             }
         }
     }
