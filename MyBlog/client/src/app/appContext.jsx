@@ -1,16 +1,22 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+
+const DEFAULT_USER = {
+  userName: "",
+  permissions: [],
+  token: "",
+  isAdmin: false,
+};
 
 export const appContext = createContext(null);
 
 export const AppContextProvider = ({ children }) => {
-  const DEFAULT_USER = {
-    userName: "",
-    permissions: [],
-    token: "",
-    isAdmin: false,
-  };
-
-  const [user, setUser] = useState(DEFAULT_USER);
+  const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
 
   const jwtHeader = user?.token
@@ -19,27 +25,19 @@ export const AppContextProvider = ({ children }) => {
       }
     : {};
 
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("storedUser"));
-    validateToken(storedUser, (_user) => setUser(_user));
+  const validateToken = useCallback((_user, validHandler = null) => {
+    if (_user && new Date(_user.expiration) - new Date() > 0) {
+      if (validHandler) validHandler(_user);
+      return true;
+    } else {
+      setUser(DEFAULT_USER);
+      localStorage.removeItem("storedUser");
+      return false;
+    }
   }, []);
 
-  const validateToken = (_user, validHandler = null) => {
-    if (_user) {
-      if (new Date(_user.expiration) - new Date() > 0) {
-        //if stored token has not expired
-        if (validHandler) validHandler(_user);
-        return true;
-      } else {
-        account.logout();
-        return false;
-      }
-    }
-  };
-
   const fetchWrapper = (...params) => {
-    // validateToken(user);
-    return fetch(...params);
+    if (validateToken(user)) return fetch(...params);
   };
 
   const account = {
@@ -213,6 +211,15 @@ export const AppContextProvider = ({ children }) => {
         headers: { ...jwtHeader },
       }),
   };
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("storedUser"));
+
+    validateToken(storedUser, (_user) => {
+      setUser(_user);
+    });
+  }, [validateToken]);
+
   return (
     <appContext.Provider
       value={{

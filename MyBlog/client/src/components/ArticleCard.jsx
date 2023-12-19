@@ -47,11 +47,9 @@ export const ArticleCard = ({
   const { user, api } = useAppContext();
   const isInAriclePage = articleUrlId ?? false;
 
-  console.log(article);
-
   useEffect(() => {
     setIsCommentOpen(isInAriclePage);
-  }, []);
+  }, [isInAriclePage]);
 
   const toggleArticleCard = (e) => {
     e.preventDefault();
@@ -65,7 +63,6 @@ export const ArticleCard = ({
           setIsLoading(false);
         })
         .catch((err) => {
-          console.log(err);
           setIsLoading(false);
         });
     } else {
@@ -89,7 +86,7 @@ export const ArticleCard = ({
     });
   };
 
-  const handleToggleLike = () => {
+  const toggleLike = () => {
     api.articles.toggleLike(article.id).then((res) => {
       if (res.status === 204 || res.status === 200) {
         if (isInAriclePage) {
@@ -250,15 +247,19 @@ export const ArticleCard = ({
           ></div>
           <UseAnimations
             animation={Thumbup}
-            onClick={user.userName != "" ? handleToggleLike : null}
-            disabled={user.userName === ""}
+            onClick={user.userName !== "" ? toggleLike : null}
             reverse={article.isLikedByUser}
             render={(eventProps, animationProps) => (
               <Button
                 color="transparent"
                 tag="div"
+                disabled={user.userName === ""}
                 {...eventProps}
-                style={{ display: "inline-flex", alignItems: "center" }}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  opacity: 0.8,
+                }}
               >
                 <div
                   {...animationProps}
@@ -266,12 +267,11 @@ export const ArticleCard = ({
                     display: "inline-block",
                     marginRight: "8px",
                     marginBottom: "5px",
-                    height: "26px",
                   }}
                 />
                 <span style={{ marginRight: "2px" }}>Like</span>
                 <span>
-                  {article.numberOfLikes != 0
+                  {article.numberOfLikes !== 0
                     ? `(${article.numberOfLikes})`
                     : ""}
                 </span>

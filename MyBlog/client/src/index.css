@@ -27,30 +27,34 @@ textarea {
   overflow: scroll;
 }
 
-.article-list-header-buttons {
+.article-list-top-buttons {
   display: inline-flex;
   align-items: center;
   margin-right: 10px;
   border-color: #ffffff;
 }
 
-.article-list-header-buttons:hover {
+.article-list-top-buttons:hover {
   color: grey;
   border-color: #ffffff;
   background-color: #eeeeee;
 }
 
-.article-list-header-buttons:focus {
+.article-list-top-buttons:focus {
   box-shadow: none;
 }
 
-.article-list-header-buttons.focus svg {
+.article-list-top-buttons.focus svg {
   fill: #0d6efd;
 }
 
-.article-list-header-buttons span {
+.article-list-top-buttons span {
   font-size: 1.1rem;
   margin-left: 10px;
+}
+
+.article-list-top-buttons.focus span {
+  color: #0d6efd;
 }
 
 .page-breadbrumb {

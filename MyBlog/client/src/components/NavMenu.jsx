@@ -30,7 +30,7 @@ export const NavMenu = () => {
     api.articles.getCategories().then((categories) => {
       setCategories(categories);
     });
-  }, [user]);
+  }, [user, api]);
 
   const toggleLoginModal = () => {
     if (isLoginModalOpen) {
@@ -39,7 +39,7 @@ export const NavMenu = () => {
     setIsLoginModalOpen(!isLoginModalOpen);
   };
 
-  return (
+  return user ? (
     <Navbar
       className="navbar-expand-sm navbar-toggleable-sm  ng-white border-bottom box-shadow px-5"
       color="black"
@@ -173,6 +173,8 @@ export const NavMenu = () => {
         </ul>
       </Collapse>
     </Navbar>
+  ) : (
+    <></>
   );
 };
 
