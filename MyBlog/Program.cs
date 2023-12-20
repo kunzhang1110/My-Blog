@@ -23,7 +23,10 @@ builder.Services
 builder.Services.AddDbContext<MyBlogContext>(
     opt => opt.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")!,
-        options => { options.EnableRetryOnFailure(); options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery); })
+        options => {
+            options.EnableRetryOnFailure(); 
+            //options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery); 
+        })
     );
 
 builder.Services.AddIdentityCore<User>() //add identity service and role-based authorization service

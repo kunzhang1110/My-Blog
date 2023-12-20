@@ -8,7 +8,8 @@
         public string Body { get; set; } = null!;
         public int Views { get; set; }
         public int NumberOfLikes { get; set; }
-        public bool IsLikedByUser { get; set; }=false;
+        public int NumberOfComments { get; set; }
+        public bool IsLikedByUser { get; set; } = false;
         public IEnumerable<string>? ImageUrls { get; set; }
         public ICollection<Tag>? Tags { get; set; } = new HashSet<Tag>();
     }

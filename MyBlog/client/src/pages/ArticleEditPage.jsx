@@ -295,12 +295,13 @@ export const ArticleEditPage = () => {
               <Spinner fullPage />
             ) : (
               <>
-                <h1>{id ? "Edit" : "New"} Article</h1>
                 <Form>
+                  <h3>Title</h3>
                   <InputWithValidation
                     input={title}
                     inputType={"title"}
                     setInput={setTitle}
+                    hasHiddenLabel="true"
                   />
                   {/* tags */}
                   <FormGroup>
@@ -426,7 +427,7 @@ export const ArticleEditPage = () => {
                   </Row>
 
                   {/*buttons: post, cancel, save as markdown */}
-                  <div className="d-flex mt-2 justify-content-between">
+                  <div className="d-flex mt-3 justify-content-between">
                     <FormGroup className="text-end">
                       <Button
                         className="m-1"
@@ -459,7 +460,7 @@ export const ArticleEditPage = () => {
                   </div>
 
                   {/* upload images */}
-                  <FormGroup>
+                  <FormGroup className="mt-2">
                     <h4>Upload Images and Markdown Files</h4>
 
                     <div className="dropzone">

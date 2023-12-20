@@ -37,7 +37,8 @@ export const AppContextProvider = ({ children }) => {
   }, []);
 
   const fetchWrapper = (...params) => {
-    if (validateToken(user)) return fetch(...params);
+    validateToken(user);
+    return fetch(...params);
   };
 
   const account = {
@@ -99,9 +100,9 @@ export const AppContextProvider = ({ children }) => {
 
   const articles = {
     getArticle: (id) =>
-      fetchWrapper(`/api/articles/${id}`, { ...jwtHeader }).then((res) =>
-        res.json()
-      ),
+      fetchWrapper(`/api/articles/${id}`, {
+        headers: { ...jwtHeader },
+      }).then((res) => res.json()),
 
     getArticles: (categoryName, pageNumber = 1, orderBy = "dateAsc") => {
       let params = {
@@ -172,7 +173,7 @@ export const AppContextProvider = ({ children }) => {
     getCommentsByArticleId: (
       articleId,
       pageNumber = 1,
-      orderBy = "dateAsc"
+      orderBy = "dateDesc"
     ) => {
       let params = {
         orderBy,

@@ -19,6 +19,7 @@ import { VscEllipsis } from "react-icons/vsc";
 import { Spinner } from "./Spinner";
 import { useAppContext } from "../app/appContext";
 import { CommentEdit } from "./CommentEdit";
+import moment from "moment";
 
 export const Comment = ({
   comment,
@@ -47,64 +48,76 @@ export const Comment = ({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <FaUser className=" me-2" />
-          <span style={{ fontWeight: "bold" }}>{comment.userName}</span>
-          <span style={{ float: "right" }}></span>
-          <Dropdown
-            isOpen={isDropdownOpen}
-            toggle={toggleDropDown}
-            style={{ float: "right" }}
+      <Card style={{ borderColor: "#eeeeee" }}>
+        <CardBody className="px-4 py-2">
+          <div
+            className="d-inline-flex justify-content-between align-items-center"
+            style={{ width: "100%" }}
           >
-            <DropdownToggle
-              color="transparent"
-              className="btn-article-card-top-right"
+            <div>
+              <FaUser className=" me-2" />
+              <span style={{ fontWeight: "bold" }}>{comment.userName}</span>
+            </div>
+            <Dropdown
+              isOpen={isDropdownOpen}
+              toggle={toggleDropDown}
+              className="ml-auto"
+              style={{ float: "right" }}
             >
-              <VscEllipsis color="grey" />
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem
-                disabled={!(user.userName === comment.userName || user.isAdmin)}
-                onClick={toggleEditMode}
+              <DropdownToggle
+                color="transparent"
+                className="btn-article-card-top-right"
               >
-                Edit
-              </DropdownItem>
-              <DropdownItem
-                disabled={!(user.userName === comment.userName || user.isAdmin)}
-                onClick={toggleModal}
-              >
-                Delete
-              </DropdownItem>
-              <Modal isOpen={isModalOpen} toggle={toggleModal} centered={true}>
-                <ModalHeader>
-                  Are your sure you want to delete this post?
-                </ModalHeader>
-                <ModalFooter>
-                  <Button
-                    className="btn-loading"
-                    color="danger"
-                    onClick={handleDeleteComment}
-                  >
-                    {isDeleting ? (
-                      <Spinner
-                        size="1.5rem"
-                        className="justify-content-center"
-                      />
-                    ) : (
-                      "Delete"
-                    )}
-                  </Button>
-                  <Button color="secondary" onClick={toggleModal}>
-                    Cancel
-                  </Button>
-                </ModalFooter>
-              </Modal>
-            </DropdownMenu>
-          </Dropdown>
-        </CardHeader>
-
-        <CardBody style={{ marginLeft: "25px" }}>
+                <VscEllipsis color="grey" />
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem
+                  disabled={
+                    !(user.userName === comment.userName || user.isAdmin)
+                  }
+                  onClick={toggleEditMode}
+                >
+                  Edit
+                </DropdownItem>
+                <DropdownItem
+                  disabled={
+                    !(user.userName === comment.userName || user.isAdmin)
+                  }
+                  onClick={toggleModal}
+                >
+                  Delete
+                </DropdownItem>
+                <Modal
+                  isOpen={isModalOpen}
+                  toggle={toggleModal}
+                  centered={true}
+                >
+                  <ModalHeader>
+                    Are your sure you want to delete this post?
+                  </ModalHeader>
+                  <ModalFooter>
+                    <Button
+                      className="btn-loading"
+                      color="danger"
+                      onClick={handleDeleteComment}
+                    >
+                      {isDeleting ? (
+                        <Spinner
+                          size="1.5rem"
+                          className="justify-content-center"
+                        />
+                      ) : (
+                        "Delete"
+                      )}
+                    </Button>
+                    <Button color="secondary" onClick={toggleModal}>
+                      Cancel
+                    </Button>
+                  </ModalFooter>
+                </Modal>
+              </DropdownMenu>
+            </Dropdown>
+          </div>
           {isEditMode ? (
             <CommentEdit
               articleId={articleId}
@@ -115,16 +128,15 @@ export const Comment = ({
               setIsEditMode={setIsEditMode}
             />
           ) : (
-            <>
-              <CardText>
-                <small className="text-muted">
-                  Updated on {comment.date.substring(0, 10)}
-                </small>
+            <div className="ms-4">
+              <CardText className="text-muted" style={{ fontSize: "0.8rem" }}>
+                Updated on
+                {moment(comment.date.substring(0, 10), "DD/MM/YYYY").format(
+                  "MMM DD, YYYY"
+                )}
               </CardText>
-              <CardText style={{ whiteSpace: "pre-line" }}>
-                {comment.body}
-              </CardText>
-            </>
+              <CardText>{comment.body}</CardText>
+            </div>
           )}
         </CardBody>
       </Card>

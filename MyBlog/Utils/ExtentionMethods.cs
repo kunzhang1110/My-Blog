@@ -36,6 +36,7 @@ namespace My_Blog.Utils
                 Tags = article.ArticleTags.Select(at => at.Tag).ToList(),
                 ImageUrls = imageUrls?.Count > 0 ? imageUrls : null,
                 NumberOfLikes = article.ArticleLikes.Count,
+                NumberOfComments = article.Comments.Count,
                 IsLikedByUser = userId != null && article.ArticleLikes.Any(articleLike => articleLike.UserId == userId)
             };
         }

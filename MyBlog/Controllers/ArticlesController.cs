@@ -102,6 +102,7 @@ namespace MyBlog.Controllers
                 .Include(a => a.ArticleLikes)
                 .Include(a => a.Comments)
                 .FilterCategory(pageParams.CategoryName)
+                .AsSplitQuery()
                 .AsQueryable();
 
             if (pageParams.OrderBy!.Contains("date"))
@@ -116,6 +117,8 @@ namespace MyBlog.Controllers
             var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
 
             if (articles == null) return BadRequest();
+
+            var temp=_context.ArticleLikes.ToList();
 
             var articleSummaryDtos = new List<ArticleDto>();
             var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId)

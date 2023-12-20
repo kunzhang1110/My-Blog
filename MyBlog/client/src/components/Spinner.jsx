@@ -4,7 +4,7 @@ import gif from "../assets/logos/loading-waiting.gif";
 export const Spinner = ({ size, containerHeight, className, fullPage }) => {
   if (fullPage) {
     size = "5rem";
-    containerHeight = "90vh";
+    containerHeight = "120vh";
     className = "justify-content-center";
   }
 
@@ -30,5 +30,5 @@ export const Spinner = ({ size, containerHeight, className, fullPage }) => {
 Spinner.defaultProps = {
   size: "4rem",
   className: "",
-  containerHeight: "100%",
+  containerHeight: "120%",
 };

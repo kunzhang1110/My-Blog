@@ -38,6 +38,10 @@ export const ArticleCard = ({
   const imageDirectory = `UserData/${article.id}`;
   const [collapsed, setCollapsed] = useState(true);
   const [body, setBody] = useState("");
+  const [numberOfLikes, setNumberOfLikes] = useState(article.numberOfLikes);
+  const [numberOfComments, setNumberOfComments] = useState(
+    article.numberOfComments
+  );
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCommentOpen, setIsCommentOpen] = useState(false);
@@ -88,12 +92,10 @@ export const ArticleCard = ({
 
   const toggleLike = () => {
     api.articles.toggleLike(article.id).then((res) => {
-      if (res.status === 204 || res.status === 200) {
-        if (isInAriclePage) {
-          updatePageComponent();
-        } else {
-          updatePageComponent(paginationData.currentPage);
-        }
+      if (res.status === 200) {
+        setNumberOfLikes((prev) => prev + 1);
+      } else if (res.status === 204) {
+        setNumberOfLikes((prev) => prev - 1);
       }
     });
   };
@@ -107,7 +109,10 @@ export const ArticleCard = ({
               onClick={() => {
                 if (!isInAriclePage) navigate(`/articles/${article.id}`);
               }}
-              style={{ cursor: isInAriclePage ? null : "pointer" }}
+              style={{
+                cursor: isInAriclePage ? null : "pointer",
+                fontSize: "2rem",
+              }}
             >
               {article.title}
             </h1>
@@ -223,21 +228,19 @@ export const ArticleCard = ({
             </Link>
           </Row>
         )}
-        <ButtonGroup className="my-3" style={{ alignItems: "center" }}>
+        <ButtonGroup className="mt-2" style={{ alignItems: "center" }}>
           <Button
             color="transparent"
             onClick={() => setIsCommentOpen(!isCommentOpen)}
-            tag="div"
-            style={{
-              paddingLeft: "0px",
-              display: "inline-flex",
-              alignItems: "center",
-            }}
+            className={
+              "article-card-comment-collapse-btn " +
+              (isCommentOpen ? "focus" : "")
+            }
           >
             <GoComment
-              style={{ marginRight: "8px", height: "20px", width: "20px" }}
+              style={{ marginRight: "8px", height: "23px", width: "20px" }}
             />
-            Comments
+            <span>Comments ({numberOfComments})</span>
           </Button>
           <div
             style={{
@@ -270,16 +273,20 @@ export const ArticleCard = ({
                   }}
                 />
                 <span style={{ marginRight: "2px" }}>Like</span>
-                <span>
-                  {article.numberOfLikes !== 0
-                    ? `(${article.numberOfLikes})`
-                    : ""}
-                </span>
+                <span>{numberOfLikes !== 0 ? `(${numberOfLikes})` : ""}</span>
               </Button>
             )}
           />
         </ButtonGroup>
-        {isCommentOpen ? <CommentsList articleId={article.id} /> : <></>}
+        {isCommentOpen ? (
+          <CommentsList
+            article={article}
+            numberOfComments={numberOfComments}
+            setNumberOfComments={setNumberOfComments}
+          />
+        ) : (
+          <></>
+        )}
       </CardBody>
     </Card>
   );
