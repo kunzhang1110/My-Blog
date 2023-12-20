@@ -56,6 +56,7 @@ export const CommentEdit = ({
           .then(() => {
             updateComments(articleId, 1, true);
             setIsEditMode(false);
+            setNewComment(DEFAULT_INPUT);
           });
       } else {
         api.comments
@@ -65,6 +66,7 @@ export const CommentEdit = ({
           })
           .then(() => {
             updateComments(articleId, 1, true);
+            setNewComment(DEFAULT_INPUT);
           });
       }
     }
@@ -72,9 +74,11 @@ export const CommentEdit = ({
 
   const handleCancelComment = () => {
     setNewComment(DEFAULT_INPUT);
+    setIsEditMode(false);
   };
+
   return (
-    <div>
+    <div className="my-2 ms-4">
       <InputWithValidation
         input={newComment}
         inputType={"textarea"}
@@ -88,8 +92,13 @@ export const CommentEdit = ({
           <Button outline onClick={handleCancelComment}>
             Cancel
           </Button>
-          <Button outline onClick={handlePostComment}>
-            Post
+          <Button
+            outline
+            className="ms-2"
+            color="primary"
+            onClick={handlePostComment}
+          >
+            Edit
           </Button>
         </ButtonGroup>
       </div>

@@ -5,7 +5,7 @@ import { Spinner } from "./Spinner";
 import { Comment } from "./Comment";
 import { CommentEdit } from "./CommentEdit";
 
-export const CommentsList = ({ articleId }) => {
+export const CommentsList = ({ article, setNumberOfComments }) => {
   const [comments, setComments] = useState([]);
   const [paginationData, setPaginationData] = useState();
   const [isLoading, setIsLoading] = useState(false);
@@ -17,7 +17,9 @@ export const CommentsList = ({ articleId }) => {
       api.comments
         .getCommentsByArticleId(articleId, pageNumber)
         .then((resp) => {
-          setPaginationData(JSON.parse(resp.headers.get("Pagination")));
+          let paginationHeaderData = JSON.parse(resp.headers.get("Pagination"));
+          setPaginationData(paginationHeaderData);
+          setNumberOfComments(paginationHeaderData.totalCount);
           return resp.json();
         })
         .then((data) => {
@@ -26,38 +28,39 @@ export const CommentsList = ({ articleId }) => {
           } else {
             setComments([...comments, ...data]);
           }
+
           setIsLoading(false);
         });
     }
   };
 
   useEffect(() => {
-    updateComments(articleId);
+    updateComments(article.id);
   }, []);
 
   const handleLoadMore = () => {
-    updateComments(articleId, paginationData.currentPage + 1);
+    updateComments(article.id, paginationData.currentPage + 1);
   };
 
   return (
-    <>
+    <div className="m-2">
       {user.isAdmin ? (
         <CommentEdit
-          articleId={articleId}
+          articleId={article.id}
           setIsLoading={setIsLoading}
           updateComments={updateComments}
         />
       ) : (
         <></>
       )}
-      <div className="mt-2">
+      <div>
         {comments.length > 0 ? (
           <>
             {comments.map((comment) => (
               <Comment
                 comment={comment}
                 key={comment.id}
-                articleId={articleId}
+                articleId={article.id}
                 updateComments={updateComments}
                 setIsLoading={setIsLoading}
               />
@@ -73,9 +76,17 @@ export const CommentsList = ({ articleId }) => {
               <></>
             )}
             {paginationData.currentPage < paginationData.totalPages ? (
-              <Button outline className="mt-2" onClick={handleLoadMore}>
-                Load More
-              </Button>
+              <div
+                className="text-center mt-2"
+                onClick={handleLoadMore}
+                style={{
+                  cursor: "pointer",
+                  color: "#0d6efd",
+                  width: "100%",
+                }}
+              >
+                See More Comments
+              </div>
             ) : (
               <></>
             )}
@@ -86,6 +97,6 @@ export const CommentsList = ({ articleId }) => {
           </Card>
         )}
       </div>
-    </>
+    </div>
   );
 };

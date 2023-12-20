@@ -56,7 +56,7 @@ export const SideBar = ({ setIsAlertOpen }) => {
         </CardBody>
       </Card>
 
-      {user.isAdmin ? (
+      {user?.isAdmin ? (
         <Card className="m-2">
           <CardBody className="text-center m-2">
             <Link to={`/create`}>

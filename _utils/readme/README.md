@@ -8,7 +8,7 @@ through drag and drop.
 
 Access the website at <https://myblog20230101.azurewebsites.net/>
 
-<img src="_readme/media/image1.png" style="width:7in;height:3.83056in"
+<img src="_imgs/media/image1.png" style="width:7in;height:3.83056in"
 alt="Graphical user interface, application, email Description automatically generated" />
 
 ## Getting Started
@@ -36,7 +36,7 @@ To easily create or edit an article, a user can follow the steps below:
 2.  Drag Markdown file AND images folder together and drop onto the
     page.
 
-> <img src="_readme/media/image2.png"
+> <img src="_imgs/media/image2.png"
 > style="width:6.30677in;height:3.39739in"
 > alt="Graphical user interface, application Description automatically generated" />
 
@@ -44,8 +44,7 @@ To easily create or edit an article, a user can follow the steps below:
     corresponding markdown for inserting the image will be copied onto
     users’ clipboard.
 
-<img src="_readme/media/image3.png"
-style="width:7in;height:4.56806in" />
+<img src="_imgs/media/image3.png" style="width:7in;height:4.56806in" />
 
 ### Markdown Format
 
@@ -87,3 +86,7 @@ Frontend - React
 - remark: transform markdown format to HTML
 
 - rehype: transform origin HTML to modified HTML
+
+- react-icons
+
+- react-useanimations: animated icons
