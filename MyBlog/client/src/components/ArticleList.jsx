@@ -4,7 +4,7 @@ import { ArticleCard } from "./ArticleCard";
 import { AppPagination } from "./AppPagination";
 import { FaNewspaper, FaArchive, FaCommentDots } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../app/appContext";
+import { useAppContext } from "../shared/appContext";
 import { Spinner } from "./Spinner";
 
 export const ArticleList = ({ category }) => {
@@ -81,19 +81,19 @@ export const ArticleList = ({ category }) => {
                 <ButtonGroup>
                   <ArticleListTopButton
                     Icon={FaArchive}
-                    iconSize={25}
+                    iconSize={23}
                     orderByString={"dateAsc"}
                     text="Oldest"
                   />
                   <ArticleListTopButton
                     Icon={FaNewspaper}
-                    iconSize={30}
+                    iconSize={27}
                     orderByString={"dateDesc"}
                     text="Newest"
                   />
                   <ArticleListTopButton
                     Icon={FaCommentDots}
-                    iconSize={26}
+                    iconSize={23}
                     orderByString={"mostCommented"}
                     text="Most Commented"
                   />

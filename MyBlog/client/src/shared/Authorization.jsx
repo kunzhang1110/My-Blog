@@ -16,7 +16,7 @@ export const AuthorizationAdmin = () => {
 export const Authorization = () => {
   const { user } = useAppContext();
 
-  return user.userName !== "" ? (
+  return user?.userName !== "" ? (
     <Outlet />
   ) : (
     <ErrorPage message="Unauthorized. Please Login." />

@@ -7,7 +7,7 @@ import {
 } from "./InputWithValidation.jsx";
 import { Spinner } from "./Spinner.jsx";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../app/appContext.jsx";
+import { useAppContext } from "../shared/appContext.jsx";
 
 export const NavMenuLogin = ({ toggleLoginModal }) => {
   const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);

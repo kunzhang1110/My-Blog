@@ -11,7 +11,7 @@ import { Authorization, AuthorizationAdmin } from "./Authorization.jsx";
 import ErrorPage from "../pages/ErrorPage.jsx";
 import { useAppContext } from "./appContext.jsx";
 
-export const Router = () => {
+export const AppRouter = () => {
   const { api } = useAppContext();
 
   const browserRouter = createBrowserRouter([

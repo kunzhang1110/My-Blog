@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useAppContext } from "../app/appContext";
-import { Button, Card, CardBody } from "reactstrap";
+import React, { useEffect, useState, useCallback } from "react";
+import { useAppContext } from "../shared/appContext";
+import { Card, CardBody } from "reactstrap";
 import { Spinner } from "./Spinner";
 import { Comment } from "./Comment";
-import { CommentEdit } from "./CommentEdit";
+import { CommentCreateOrEdit } from "./CommentCreateOrEdit";
 
 export const CommentsList = ({ article, setNumberOfComments }) => {
   const [comments, setComments] = useState([]);
@@ -11,49 +11,60 @@ export const CommentsList = ({ article, setNumberOfComments }) => {
   const [isLoading, setIsLoading] = useState(false);
   const { api, user } = useAppContext();
 
-  const updateComments = (articleId, pageNumber, isReloading = false) => {
-    {
+  const getComments = useCallback(
+    (articleId, isReloading = false) => {
       setIsLoading(true);
       api.comments
-        .getCommentsByArticleId(articleId, pageNumber)
+        .getCommentsByArticleId(articleId)
         .then((resp) => {
           let paginationHeaderData = JSON.parse(resp.headers.get("Pagination"));
           setPaginationData(paginationHeaderData);
-          setNumberOfComments(paginationHeaderData.totalCount);
+          setNumberOfComments(paginationHeaderData?.totalCount);
           return resp.json();
         })
         .then((data) => {
           if (isReloading) {
             setComments(data);
           } else {
-            setComments([...comments, ...data]);
+            setComments((prevComments) => [...prevComments, ...data]);
           }
-
           setIsLoading(false);
         });
-    }
-  };
+    },
+    [api.comments, setNumberOfComments]
+  );
 
   useEffect(() => {
-    updateComments(article.id);
-  }, []);
+    let isMounted = true;
+
+    if (isMounted) {
+      getComments(article.id, true);
+    }
+
+    return () => {
+      isMounted = false; // Set mounted state to false when unmounting
+    };
+  }, [article.id, getComments]);
 
   const handleLoadMore = () => {
-    updateComments(article.id, paginationData.currentPage + 1);
+    getComments(article.id, paginationData.currentPage + 1);
   };
 
   return (
     <div className="m-2">
       {user.isAdmin ? (
-        <CommentEdit
+        <CommentCreateOrEdit
           articleId={article.id}
           setIsLoading={setIsLoading}
-          updateComments={updateComments}
+          updateComments={getComments}
         />
       ) : (
         <></>
       )}
-      <div>
+      <div
+        className="mt-3 py-1"
+        style={{ border: "1px solid #eeeeee", borderRadius: "8px" }}
+      >
         {comments.length > 0 ? (
           <>
             {comments.map((comment) => (
@@ -61,7 +72,7 @@ export const CommentsList = ({ article, setNumberOfComments }) => {
                 comment={comment}
                 key={comment.id}
                 articleId={article.id}
-                updateComments={updateComments}
+                getComments={getComments}
                 setIsLoading={setIsLoading}
               />
             ))}

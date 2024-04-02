@@ -14,17 +14,21 @@ import {
   ModalFooter,
   ButtonGroup,
 } from "reactstrap";
+import Avatar from "react-avatar";
 import { Link, useNavigate } from "react-router-dom";
 import { VscEllipsis } from "react-icons/vsc";
 import { GoEye, GoComment } from "react-icons/go";
 import { MdDateRange } from "react-icons/md";
+import UseAnimations from "react-useanimations";
+import Thumbup from "react-useanimations/lib/thumbUp";
+
+import { useAppContext } from "../shared/appContext.jsx";
+import { capitalize } from "../shared/utils";
 import { Spinner } from "./Spinner";
 import { Tag } from "./Tag";
 import { AppReactMarkdown } from "./AppReactMarkdown.jsx";
-import { useAppContext } from "../app/appContext.jsx";
 import { CommentsList } from "./CommentsList.jsx";
-import UseAnimations from "react-useanimations";
-import Thumbup from "react-useanimations/lib/thumbUp";
+import { BLOG_AUTHOR } from "../shared/constants.js";
 
 //React Markdown common components
 export const rmComponents = {};
@@ -102,7 +106,7 @@ export const ArticleCard = ({
 
   return (
     <Card className="m-1">
-      <CardBody className="m-2">
+      <CardBody className="mx-3 my-1">
         <Row>
           <Col xs="11">
             <h1
@@ -116,7 +120,6 @@ export const ArticleCard = ({
             >
               {article.title}
             </h1>
-            {/* </a> */}
           </Col>
           {/* top right dropdown menu */}
           <Col xs="1" style={{ textAlign: "right" }}>
@@ -185,18 +188,25 @@ export const ArticleCard = ({
             </Dropdown>
           </Col>
         </Row>
-        {/* stats and tags */}
-        <div className="d-inline-flex align-items-center mt-2 mb-3 flex-wrap">
+        <div className="ms-1 d-flex align-items-center"></div>
+        {/* user name, stats and tags */}
+        <div className="d-flex align-items-center flex-wrap">
+          <Avatar size="24" name={BLOG_AUTHOR} textSizeRatio={1.8} round />
+          <span
+            className="m-2"
+            style={{ fontWeight: "600", fontSize: "1.05rem" }}
+          >
+            {capitalize(BLOG_AUTHOR)}
+          </span>
           <MdDateRange className="m-1" />
           <span className="me-2">{article.date.substring(0, 10)}</span>
           <GoEye className="m-1" />
           <span className="me-2">{article.views}</span>
-          <div className="d-sm-inline-flex flex-wrap m-1">
-            {article.tags.map((tag) => (
-              <Tag className="m-1" tag={tag} key={tag.id} />
-            ))}
-          </div>
+          {article.tags.map((tag) => (
+            <Tag className="m-1" tag={tag} key={tag.id} />
+          ))}
         </div>
+
         <AppReactMarkdown
           children={collapsed ? article.body : body}
           imgFunc={({ node, src, ...props }) => {

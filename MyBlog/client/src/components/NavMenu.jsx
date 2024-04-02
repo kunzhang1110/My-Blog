@@ -13,10 +13,11 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
+import Avatar from "react-avatar";
 import { Link, NavLink as RRNavLink } from "react-router-dom";
 import { NavMenuLogin } from "./NavMenuLogin.jsx";
-import { useAppContext } from "../app/appContext.jsx";
-import { _captalize } from "../app/utils";
+import { useAppContext } from "../shared/appContext.jsx";
+import { capitalize } from "../shared/utils.js";
 
 export const NavMenu = () => {
   const [categories, setCategories] = useState([]);
@@ -125,7 +126,7 @@ export const NavMenu = () => {
                 <DropdownToggle tag="span">
                   <div className="navbar-nav">
                     <NavLink style={{ cursor: "pointer" }}>
-                      {_captalize(user.userName)}
+                      {capitalize(user.userName)}
                     </NavLink>
                   </div>
                 </DropdownToggle>

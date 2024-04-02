@@ -4,8 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
 import { ArticleList } from "../components/ArticleList";
 import { Spinner } from "../components/Spinner";
-import { useAppContext } from "../app/appContext";
-import { _captalize } from "../app/utils";
+import { useAppContext } from "../shared/appContext";
+import { capitalize } from "../shared/utils";
+import Avatar from "react-avatar";
 
 export const ProfilePage = () => {
   const [articlesList, setArticlesList] = useState([]);
@@ -14,7 +15,7 @@ export const ProfilePage = () => {
   const { api, user } = useAppContext();
   const navigate = useNavigate();
 
-  const updateArticlesList = useCallback(
+  const getArticlesList = useCallback(
     (pageNumber, orderBy) => {
       api.articles
         .GetArticlesByUserCommentedOrLiked(user.userId, pageNumber, orderBy)
@@ -42,12 +43,11 @@ export const ProfilePage = () => {
 
   useEffect(() => {
     document.title = "Profile";
-
     setIsLoading(true);
-    if (user.userName !== "") {
-      updateArticlesList(1);
+    if (user && user.userName !== "") {
+      getArticlesList(1);
     }
-  }, [user, updateArticlesList]);
+  }, [user, getArticlesList]);
 
   return (
     <>
@@ -65,15 +65,24 @@ export const ProfilePage = () => {
             <Card className="m-2">
               <CardBody className="m-3">
                 <h1 style={{ fontSize: "2.5rem" }}>
-                  {_captalize(user.userName)}
+                  <div className="d-flex align-items-center">
+                    <Avatar
+                      size="48"
+                      className="me-2"
+                      name={user.userName}
+                      textSizeRatio={1.5}
+                      round
+                    />
+                    {capitalize(user.userName)}
+                  </div>
                 </h1>
                 <hr />
 
                 <dl className="row w-75" style={{ fontSize: "1.2rem" }}>
-                  <dt className="col-sm-1">Email</dt>
-                  <dd className="col-sm-11">{user.email}</dd>
-                  <dt className="col-sm-1">Roles</dt>
-                  <dd className="col-sm-11">{user.roles.join(", ")}</dd>
+                  <dt className="col-xxl-1">Email</dt>
+                  <dd className="col-xxl-11">{user.email}</dd>
+                  <dt className="col-xxl-1">Roles</dt>
+                  <dd className="col-xxl-11">{user.roles.join(", ")}</dd>
                 </dl>
               </CardBody>
             </Card>
@@ -85,7 +94,7 @@ export const ProfilePage = () => {
                 <ArticleList
                   articlesList={articlesList}
                   paginationData={paginationData ?? null}
-                  updateArticlesList={updateArticlesList}
+                  updateArticlesList={getArticlesList}
                 />
               </CardBody>
             </Card>

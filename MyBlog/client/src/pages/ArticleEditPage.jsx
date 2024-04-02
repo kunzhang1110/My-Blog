@@ -22,7 +22,7 @@ import { AppReactMarkdown } from "../components/AppReactMarkdown.jsx";
 import { Spinner } from "../components/Spinner";
 import { Tag } from "../components/Tag";
 import { AppBreadCrumb } from "../components/AppBreadCrumb.jsx";
-import { useAppContext } from "../app/appContext.jsx";
+import { useAppContext } from "../shared/appContext.jsx";
 
 /** Create and update articles. If address contains id, then update; otherwise, create.
  * Use live markdown preview currently, bodyPreview is not in use. Live preview uses more browser resources*/

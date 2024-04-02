@@ -7,7 +7,7 @@ import {
   InputWithValidation,
 } from "../components/InputWithValidation";
 import { Spinner } from "../components/Spinner";
-import { useAppContext } from "../app/appContext";
+import { useAppContext } from "../shared/appContext";
 
 export const RegisterPage = () => {
   const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);

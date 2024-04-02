@@ -9,7 +9,7 @@ import {
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { SiGithub, SiTwitter, SiZhihu } from "react-icons/si";
-import { useAppContext } from "../app/appContext.jsx";
+import { useAppContext } from "../shared/appContext.jsx";
 
 export const SideBar = ({ setIsAlertOpen }) => {
   const { user } = useAppContext();

@@ -1,6 +1,6 @@
 import React from "react";
 import { FormFeedback, FormGroup, Input, Label } from "reactstrap";
-import { _captalize } from "../app/utils";
+import { capitalize } from "../shared/utils";
 
 const _validateEmail = (str) => {
   return String(str)
@@ -33,7 +33,7 @@ export const validateInput = (
     setInput({
       ...input,
       isInvalid: true,
-      invalidText: invalidText ?? `${_captalize(inputType)} cannot be blank`,
+      invalidText: invalidText ?? `${capitalize(inputType)} cannot be blank`,
     });
     return false;
   }
@@ -69,12 +69,12 @@ export const InputWithValidation = ({
   return (
     <FormGroup>
       <Label hidden={hasHiddenLabel} for={inputType}>
-        {_captalize(inputType)}
+        {capitalize(inputType)}
       </Label>
       <Input
         name={inputType}
         value={input.text}
-        placeholder={placeholderText ?? _captalize(inputType)}
+        placeholder={placeholderText ?? capitalize(inputType)}
         invalid={input.isInvalid}
         type={inputType}
         onChange={(e) => {

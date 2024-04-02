@@ -7,15 +7,15 @@ import {
   validateInput,
 } from "./InputWithValidation";
 
-import { useAppContext } from "../app/appContext";
+import { useAppContext } from "../shared/appContext";
 
-export const CommentEdit = ({
+export const CommentCreateOrEdit = ({
   articleId,
   updateComments,
   setIsLoading,
-  setIsEditMode,
+  setIsEdit,
   comment = DEFAULT_INPUT,
-  isEditMode = false,
+  isEdit = false,
 }) => {
   const [newComment, setNewComment] = useState(DEFAULT_INPUT);
   const { api, user } = useAppContext();
@@ -26,7 +26,7 @@ export const CommentEdit = ({
       invalidText: "",
       isInvalid: false,
     });
-  }, []);
+  }, [comment.body]);
 
   const handlePostComment = () => {
     if (
@@ -47,7 +47,7 @@ export const CommentEdit = ({
 
       setIsLoading(true);
 
-      if (isEditMode) {
+      if (isEdit) {
         api.comments
           .updateComment(newCommentDto)
           .then((resp) => {
@@ -55,7 +55,7 @@ export const CommentEdit = ({
           })
           .then(() => {
             updateComments(articleId, 1, true);
-            setIsEditMode(false);
+            setIsEdit(false);
             setNewComment(DEFAULT_INPUT);
           });
       } else {
@@ -74,11 +74,11 @@ export const CommentEdit = ({
 
   const handleCancelComment = () => {
     setNewComment(DEFAULT_INPUT);
-    setIsEditMode(false);
+    setIsEdit(false);
   };
 
   return (
-    <div className="my-2 ms-4">
+    <div className={isEdit ? "my-2 m-4" : "my-2"}>
       <InputWithValidation
         input={newComment}
         inputType={"textarea"}
@@ -98,7 +98,7 @@ export const CommentEdit = ({
             color="primary"
             onClick={handlePostComment}
           >
-            Edit
+            Post
           </Button>
         </ButtonGroup>
       </div>

@@ -4,7 +4,6 @@ import {
   Button,
   Card,
   CardBody,
-  CardHeader,
   CardText,
   Dropdown,
   DropdownToggle,
@@ -14,12 +13,14 @@ import {
   ModalHeader,
   ModalFooter,
 } from "reactstrap";
-import { FaUser } from "react-icons/fa";
+import Avatar from "react-avatar";
 import { VscEllipsis } from "react-icons/vsc";
-import { Spinner } from "./Spinner";
-import { useAppContext } from "../app/appContext";
-import { CommentEdit } from "./CommentEdit";
 import moment from "moment";
+
+import { Spinner } from "./Spinner";
+import { useAppContext } from "../shared/appContext";
+import { CommentCreateOrEdit } from "./CommentCreateOrEdit";
+import { capitalize } from "../shared/utils";
 
 export const Comment = ({
   comment,
@@ -48,15 +49,22 @@ export const Comment = ({
 
   return (
     <>
-      <Card style={{ borderColor: "#eeeeee" }}>
-        <CardBody className="px-4 py-2">
+      <Card style={{ borderColor: "#ffffff" }}>
+        <CardBody className="px-4 py-1">
           <div
             className="d-inline-flex justify-content-between align-items-center"
             style={{ width: "100%" }}
           >
-            <div>
-              <FaUser className=" me-2" />
-              <span style={{ fontWeight: "bold" }}>{comment.userName}</span>
+            <div className="d-inline-flex align-items-center">
+              <Avatar
+                size="22"
+                name={comment.userName}
+                textSizeRatio={1.6}
+                round
+              />
+              <span className="m-2" style={{ fontWeight: "650" }}>
+                {capitalize(comment.userName)}
+              </span>
             </div>
             <Dropdown
               isOpen={isDropdownOpen}
@@ -70,7 +78,7 @@ export const Comment = ({
               >
                 <VscEllipsis color="grey" />
               </DropdownToggle>
-              <DropdownMenu>
+              <DropdownMenu style={{ minWidth: "6rem" }}>
                 <DropdownItem
                   disabled={
                     !(user.userName === comment.userName || user.isAdmin)
@@ -119,23 +127,26 @@ export const Comment = ({
             </Dropdown>
           </div>
           {isEditMode ? (
-            <CommentEdit
+            <CommentCreateOrEdit
               articleId={articleId}
               setIsLoading={setIsLoading}
               updateComments={updateComments}
               comment={comment}
-              isEditMode={true}
-              setIsEditMode={setIsEditMode}
+              isEdit={true}
+              setIsEdit={setIsEditMode}
             />
           ) : (
-            <div className="ms-4">
-              <CardText className="text-muted" style={{ fontSize: "0.8rem" }}>
+            <div style={{ marginLeft: "2rem" }}>
+              <CardText
+                className="text-muted"
+                style={{ fontSize: "0.8rem", marginBottom: "0.5rem" }}
+              >
                 Updated on
                 {moment(comment.date.substring(0, 10), "DD/MM/YYYY").format(
                   "MMM DD, YYYY"
                 )}
               </CardText>
-              <CardText>{comment.body}</CardText>
+              <p>{comment.body}</p>
             </div>
           )}
         </CardBody>
