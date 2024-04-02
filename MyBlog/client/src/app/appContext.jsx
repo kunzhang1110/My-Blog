@@ -73,12 +73,11 @@ export const AppContextProvider = ({ children }) => {
         .then((data) => {
           if (data) {
             data["isAdmin"] = data.roles.includes("Admin");
-
             if (isRemembered) {
               //if "Rembmer Me" radio box is ticked
               localStorage.setItem("storedUser", JSON.stringify(data));
-              return data;
             }
+            return data;
           }
         }),
 

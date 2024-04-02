@@ -23,8 +23,9 @@ builder.Services
 builder.Services.AddDbContext<MyBlogContext>(
     opt => opt.UseSqlServer(
         builder.Configuration.GetConnectionString("DefaultConnection")!,
-        options => {
-            options.EnableRetryOnFailure(); 
+        options =>
+        {
+            options.EnableRetryOnFailure();
             //options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery); 
         })
     );
@@ -117,7 +118,7 @@ app.MapFallbackToFile("index.html");
 //apply migrations to database 
 var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<MyBlogContext>();
-//var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 try
@@ -125,9 +126,9 @@ try
     await context.Database.MigrateAsync(); //apply migrations
     await DbInitializer.Initialize(context, userManager, roleManager); //if context is empty, initialize the database
 }
-catch (Exception)
+catch (Exception ex)
 {
-    //logger.LogError(ex, "A problem occurred during migration");
+    logger.LogError(ex, "A problem occurred during migration");
 }
 
 app.Run();

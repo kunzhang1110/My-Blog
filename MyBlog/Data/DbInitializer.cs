@@ -35,8 +35,6 @@ namespace My_Blog.Data
                     if (tableName != null) context.Database.ExecuteSqlRaw($"SET IDENTITY_INSERT [dbo].[{tableName}] OFF");
                     transaction.Commit();
                 });
-
-
             }
 
 

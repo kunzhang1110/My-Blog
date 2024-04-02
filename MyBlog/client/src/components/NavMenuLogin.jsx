@@ -44,6 +44,7 @@ export const NavMenuLogin = ({ toggleLoginModal }) => {
         })
         .catch((err) => {
           console.log(err);
+          setIsLoading(false);
         });
     }
   };
