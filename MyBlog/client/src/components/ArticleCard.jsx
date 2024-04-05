@@ -10,9 +10,9 @@ import {
   DropdownMenu,
   DropdownItem,
   Modal,
-  ModalHeader,
   ModalFooter,
   ButtonGroup,
+  ModalBody,
 } from "reactstrap";
 import Avatar from "react-avatar";
 import { Link, useNavigate } from "react-router-dom";
@@ -146,9 +146,14 @@ export const ArticleCard = ({
                   toggle={toggleModal}
                   centered={true}
                 >
-                  <ModalHeader>
-                    Are your sure you want to delete this post?
-                  </ModalHeader>
+                  <ModalBody
+                    className="d-flex m-2"
+                    style={{ justifyContent: "center", alignItems: "center" }}
+                  >
+                    <span className="ms-2" style={{ fontSize: "1.4rem" }}>
+                      Are your sure you want to delete this post?
+                    </span>
+                  </ModalBody>
                   <ModalFooter>
                     <Button
                       className="btn-loading"

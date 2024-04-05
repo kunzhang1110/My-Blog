@@ -166,12 +166,10 @@ export const ArticleEditPage = () => {
 
   const addTag = (e) => {
     e.preventDefault();
-    console.log(tagInput);
     if (tags.find((t) => t.name === tagInput)) {
       console.log("Duplicated Tag");
     } else {
       setTags([...tags, { name: tagInput.trim() }]);
-
       setIsAddingNewTag(false);
     }
   };
@@ -301,7 +299,7 @@ export const ArticleEditPage = () => {
                     input={title}
                     inputType={"title"}
                     setInput={setTitle}
-                    hasHiddenLabel="true"
+                    hasHiddenLabel={true}
                   />
                   {/* tags */}
                   <FormGroup>
@@ -321,9 +319,12 @@ export const ArticleEditPage = () => {
                       )}
 
                       {isAddingNewTag ? (
-                        <div className="d-flex mx-2 tag-new">
+                        <div
+                          className="d-flex mx-2 tag-new"
+                          style={{ height: "1.95rem" }}
+                        >
                           <Input
-                            className="pe-2"
+                            className=""
                             type="text"
                             placeholder="New tag ..."
                             onChange={(e) => setTagInput(e.target.value)}

@@ -98,10 +98,7 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const articles = {
-    getArticle: (id) =>
-      fetchWrapper(`/api/articles/${id}`, {
-        headers: { ...jwtHeader },
-      }).then((res) => res.json()),
+    getArticle: (id) => fetch(`/api/articles/${id}`).then((res) => res.json()),
 
     getArticles: (categoryName, pageNumber = 1, orderBy = "dateAsc") => {
       let params = {

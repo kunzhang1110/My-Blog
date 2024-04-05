@@ -6,6 +6,8 @@ import { useAppContext } from "./appContext";
 export const AuthorizationAdmin = () => {
   const { user } = useAppContext();
 
+  if (!user) return <></>;
+
   return user.isAdmin ? (
     <Outlet />
   ) : (
