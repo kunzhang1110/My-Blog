@@ -118,7 +118,7 @@ namespace MyBlog.Controllers
 
             if (articles == null) return BadRequest();
 
-            var temp=_context.ArticleLikes.ToList();
+            var temp = _context.ArticleLikes.ToList();
 
             var articleSummaryDtos = new List<ArticleDto>();
             var userId = int.TryParse(User.FindFirstValue(ClaimTypes.NameIdentifier), out var parsedUserId)
@@ -144,6 +144,7 @@ namespace MyBlog.Controllers
             if (article == null) return NotFound();
 
             // Add one view
+            article.Views ??= 0;
             article.Views++;
             _context.Entry(article).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -198,7 +199,6 @@ namespace MyBlog.Controllers
                 query = query.OrderByDescending(a => a.Comments.Count);
             }
 
-
             var articles = await PagedList<Article>.ToPagedList(query, pageParams.PageNumber, pageParams.PageSize);
             if (articles == null) return BadRequest();
 
@@ -208,8 +208,6 @@ namespace MyBlog.Controllers
 
             Response.AddPaginationHeader(articles.PaginationData);
             return Ok(articleDtos);
-
-
         }
 
 

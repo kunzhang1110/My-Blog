@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Form, FormGroup, Row, Col } from "reactstrap";
+import { Button, Col, Form, FormGroup, Row } from "reactstrap";
 import {
   DEFAULT_INPUT,
   validateInput,
@@ -8,6 +8,7 @@ import {
 } from "../components/InputWithValidation";
 import { Spinner } from "../components/Spinner";
 import { useAppContext } from "../shared/appContext";
+import { AppBreadCrumb } from "../components/AppBreadCrumb";
 
 export const RegisterPage = () => {
   const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);
@@ -17,6 +18,10 @@ export const RegisterPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { api } = useAppContext();
+
+  useEffect(() => {
+    document.title = "Register";
+  }, []);
 
   const registerHandler = () => {
     setIsLoading(true);
@@ -45,47 +50,57 @@ export const RegisterPage = () => {
 
   return (
     <Row>
-      <Col md="3"></Col>
-      <Col md="6">
-        <Form>
-          <InputWithValidation
-            input={userNameInput}
-            inputType={"username"}
-            setInput={setUserNameInput}
-          />
-          <InputWithValidation
-            input={emailInput}
-            inputType={"email"}
-            setInput={setEmailInput}
-          />
-          <InputWithValidation
-            input={passwordInput}
-            inputType={"password"}
-            setInput={setPasswordInput}
-          />
+      <Col
+        xl={{
+          offset: 1,
+          size: 10,
+        }}
+        lg={{
+          size: 12,
+        }}
+      >
+        <AppBreadCrumb />
+        <div style={{ margin: "5% auto", width: "40%" }}>
+          <Form>
+            <InputWithValidation
+              input={userNameInput}
+              inputType={"username"}
+              setInput={setUserNameInput}
+            />
+            <InputWithValidation
+              input={emailInput}
+              inputType={"email"}
+              setInput={setEmailInput}
+            />
+            <InputWithValidation
+              input={passwordInput}
+              inputType={"password"}
+              setInput={setPasswordInput}
+            />
 
-          <FormGroup className="d-inline-flex">
-            <Button
-              color="primary"
-              onClick={(e) => {
-                if (validateRegisterInputs()) {
-                  registerHandler(e);
-                }
-              }}
-              className="btn-loading"
-            >
-              {isLoading ? (
-                <Spinner size="1.2rem" className="justify-content-center" />
-              ) : (
-                "Register"
-              )}
-            </Button>
-            <Button className="mx-2" onClick={() => navigate("/")}>
-              Cancel
-            </Button>
-            <div className="mt-2">{message}</div>
-          </FormGroup>
-        </Form>
+            <FormGroup className="d-inline-flex mt-2">
+              <Button
+                color="primary"
+                onClick={(e) => {
+                  if (validateRegisterInputs()) {
+                    registerHandler(e);
+                  }
+                }}
+                className="btn-loading"
+              >
+                {isLoading ? (
+                  <Spinner size="1.2rem" className="justify-content-center" />
+                ) : (
+                  "Register"
+                )}
+              </Button>
+              <Button className="mx-2" onClick={() => navigate("/")}>
+                Cancel
+              </Button>
+              <div className="mt-2">{message}</div>
+            </FormGroup>
+          </Form>
+        </div>
       </Col>
     </Row>
   );

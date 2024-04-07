@@ -6,6 +6,7 @@ import {
   CardTitle,
   CardSubtitle,
   CardText,
+  UncontrolledTooltip,
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { SiGithub, SiTwitter, SiZhihu } from "react-icons/si";
@@ -53,6 +54,9 @@ export const SideBar = ({ setIsAlertOpen }) => {
           <CardText onClick={(e) => clickEmail(e)} id="email">
             kunzhang1110@gmail.com
           </CardText>
+          <UncontrolledTooltip placement="right" target="email">
+            Copy email
+          </UncontrolledTooltip>
         </CardBody>
       </Card>
 

@@ -1,48 +1,19 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React from "react";
 import { Card, Button, CardBody, ButtonGroup } from "reactstrap";
 import { ArticleCard } from "./ArticleCard";
 import { AppPagination } from "./AppPagination";
 import { FaNewspaper, FaArchive, FaCommentDots } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
-import { useAppContext } from "../shared/appContext";
-import { Spinner } from "./Spinner";
 
-export const ArticleList = ({ category }) => {
-  const [orderBy, setOrderby] = useState("dateAsc");
-  const [articlesList, setArticlesList] = useState([]);
-  const [paginationData, setPaginationData] = useState({});
-  const { api, user } = useAppContext();
-  const [isLoading, setIsLoading] = useState(true);
-  const navigate = useNavigate();
-
-  const updateArticlesList = useCallback(
-    (category, pageNumber, orderBy = "dateAsc") => {
-      setIsLoading(true);
-      api.articles
-        .getArticles(category, pageNumber, orderBy)
-        .then((resp) => {
-          if (resp.status === "400") {
-            navigate("/error", {
-              state: { message: "Page number exceeds max pages" },
-            });
-            return;
-          }
-          setPaginationData(JSON.parse(resp.headers.get("Pagination")));
-          return resp.json();
-        })
-        .then((data) => {
-          setArticlesList(data);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-    },
-    [navigate, api]
-  );
-
+export const ArticleList = ({
+  articlesList,
+  paginationData,
+  getArticlesList,
+  orderBy,
+  setOrderby,
+  category,
+}) => {
   const handleTopButtonClick = (orderString) => {
-    updateArticlesList(category, paginationData.currentPage, orderString);
+    getArticlesList(paginationData.currentPage, orderString, category);
     setOrderby(orderString);
   };
 
@@ -61,68 +32,56 @@ export const ArticleList = ({ category }) => {
     );
   };
 
-  useEffect(() => {
-    if (user != null) {
-      document.title = "Kun's Blog - " + (category ? category : "Home");
-      setIsLoading(true);
-      updateArticlesList(category, 1);
-    }
-  }, [category, user, updateArticlesList]);
-
   return (
     <>
-      {isLoading ? (
-        <Spinner fullPage />
-      ) : (
-        <>
-          <div style={{ marginTop: "20px" }}>
-            <Card className="m-1">
-              <CardBody>
-                <ButtonGroup>
-                  <ArticleListTopButton
-                    Icon={FaArchive}
-                    iconSize={23}
-                    orderByString={"dateAsc"}
-                    text="Oldest"
-                  />
-                  <ArticleListTopButton
-                    Icon={FaNewspaper}
-                    iconSize={27}
-                    orderByString={"dateDesc"}
-                    text="Newest"
-                  />
-                  <ArticleListTopButton
-                    Icon={FaCommentDots}
-                    iconSize={23}
-                    orderByString={"mostCommented"}
-                    text="Most Commented"
-                  />
-                </ButtonGroup>
-              </CardBody>
-            </Card>
-          </div>
+      <>
+        <div style={{ marginTop: "20px" }}>
+          <Card className="m-1">
+            <CardBody>
+              <ButtonGroup>
+                <ArticleListTopButton
+                  Icon={FaArchive}
+                  iconSize={23}
+                  orderByString={"dateAsc"}
+                  text="Oldest"
+                />
+                <ArticleListTopButton
+                  Icon={FaNewspaper}
+                  iconSize={27}
+                  orderByString={"dateDesc"}
+                  text="Newest"
+                />
+                <ArticleListTopButton
+                  Icon={FaCommentDots}
+                  iconSize={23}
+                  orderByString={"mostCommented"}
+                  text="Most Commented"
+                />
+              </ButtonGroup>
+            </CardBody>
+          </Card>
+        </div>
 
-          <div style={{ marginTop: "10px" }}>
-            {articlesList.map((article) => (
-              <ArticleCard
-                article={article}
-                key={article.id}
-                updatePageComponent={(_pageNumber) =>
-                  updateArticlesList(category, _pageNumber, orderBy)
-                }
-                paginationData={paginationData ?? null}
-              />
-            ))}
-          </div>
-          <AppPagination
-            paginationData={paginationData ?? null}
-            category={category}
-            updateArticlesList={(_pageNumber) =>
-              updateArticlesList(category, _pageNumber, orderBy)
-            }
-          />
-        </>
-      )}
+        <div style={{ marginTop: "10px" }}>
+          {articlesList.map((article) => (
+            <ArticleCard
+              article={article}
+              key={article.id}
+              updatePageComponent={(_pageNumber) =>
+                getArticlesList(_pageNumber, orderBy, category)
+              }
+              paginationData={paginationData ?? null}
+            />
+          ))}
+        </div>
+        <AppPagination
+          paginationData={paginationData ?? null}
+          category={category}
+          updateArticlesList={(_pageNumber) =>
+            getArticlesList(_pageNumber, orderBy, category)
+          }
+        />
+      </>
     </>
   );
 };

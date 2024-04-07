@@ -13,7 +13,6 @@ import {
   NavItem,
   NavLink,
 } from "reactstrap";
-import Avatar from "react-avatar";
 import { Link, NavLink as RRNavLink } from "react-router-dom";
 import { NavMenuLogin } from "./NavMenuLogin.jsx";
 import { useAppContext } from "../shared/appContext.jsx";

@@ -1,24 +1,14 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
+import { useParams, useLoaderData } from "react-router-dom";
 import { Col, Row } from "reactstrap";
 import { ArticleCard } from "../components/ArticleCard";
 import { Spinner } from "../components/Spinner";
 import { ScrollUpArrow } from "../components/ScrollUpArrow";
 import { AppBreadCrumb } from "../components/AppBreadCrumb";
-import { useAppContext } from "../shared/appContext";
 
 export const ArticleSinglePage = () => {
-  const [article, setArticle] = useState("");
-  const { api } = useAppContext();
   const { articleUrlId } = useParams();
-
-  const getArticle = useCallback(() => {
-    api.articles.getArticle(articleUrlId).then((data) => setArticle(data));
-  }, [api.articles, articleUrlId]);
-
-  useEffect(() => {
-    getArticle();
-  }, [getArticle]);
+  const article = useLoaderData();
 
   return (
     <>
@@ -36,8 +26,8 @@ export const ArticleSinglePage = () => {
           {article !== "" ? (
             <ArticleCard
               article={article}
-              updatePageComponent={getArticle}
               articleUrlId={articleUrlId}
+              isSinglePage
             />
           ) : (
             <Spinner fullPage />

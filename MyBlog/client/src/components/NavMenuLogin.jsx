@@ -6,22 +6,28 @@ import {
   InputWithValidation,
 } from "./InputWithValidation.jsx";
 import { Spinner } from "./Spinner.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useMatches } from "react-router-dom";
 import { useAppContext } from "../shared/appContext.jsx";
 
 export const NavMenuLogin = ({ toggleLoginModal }) => {
   const [userNameInput, setUserNameInput] = useState(DEFAULT_INPUT);
   const [passwordInput, setPasswordInput] = useState(DEFAULT_INPUT);
-  const [isRemembered, setIsRemembered] = useState(false);
+  const [isRemembered, setIsRemembered] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+
+  const pathMatches = useMatches(); //mathces portions of the paths
+
   const navigate = useNavigate();
-  const { user, api, message, setUser } = useAppContext();
+
+  const { api, message, setUser } = useAppContext();
 
   useEffect(() => {
-    if (user.userName === "") {
+    if (userNameInput.text === "" || passwordInput.text === "") {
       setIsRemembered(false);
+    } else {
+      setIsRemembered(true);
     }
-  }, [user]);
+  }, [userNameInput, passwordInput]);
 
   const loginHandler = (e) => {
     e.preventDefault();
@@ -38,9 +44,12 @@ export const NavMenuLogin = ({ toggleLoginModal }) => {
           toggleLoginModal
         )
         .then((data) => {
-          toggleLoginModal();
+          if (pathMatches[1].pathname === "/register") {
+            navigate("/");
+          }
           setIsLoading(false);
           setUser(data);
+          toggleLoginModal();
         })
         .catch((err) => {
           console.log(err);
@@ -68,6 +77,7 @@ export const NavMenuLogin = ({ toggleLoginModal }) => {
           id="exampleCheckbox"
           name="checkbox"
           type="checkbox"
+          checked={isRemembered}
           onChange={(e) => setIsRemembered(e.target.checked)}
         />
         <Label check for="exampleCheckbox">

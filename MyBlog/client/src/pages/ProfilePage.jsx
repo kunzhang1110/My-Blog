@@ -10,8 +10,9 @@ import Avatar from "react-avatar";
 
 export const ProfilePage = () => {
   const [articlesList, setArticlesList] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [paginationData, setPaginationData] = useState({});
+  const [orderBy, setOrderby] = useState("dateAsc");
+  const [isLoading, setIsLoading] = useState(true);
   const { api, user } = useAppContext();
   const navigate = useNavigate();
 
@@ -94,7 +95,9 @@ export const ProfilePage = () => {
                 <ArticleList
                   articlesList={articlesList}
                   paginationData={paginationData ?? null}
-                  updateArticlesList={getArticlesList}
+                  getArticlesList={getArticlesList}
+                  orderBy={orderBy}
+                  setOrderby={setOrderby}
                 />
               </CardBody>
             </Card>

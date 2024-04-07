@@ -38,10 +38,11 @@ export const ArticleCard = ({
   updatePageComponent,
   paginationData,
   articleUrlId,
+  isSinglePage,
 }) => {
   const imageDirectory = `UserData/${article.id}`;
-  const [collapsed, setCollapsed] = useState(true);
-  const [body, setBody] = useState("");
+  const [collapsed, setCollapsed] = useState(isSinglePage ? false : true);
+  const [body, setBody] = useState(isSinglePage ? article.body : "");
   const [numberOfLikes, setNumberOfLikes] = useState(article.numberOfLikes);
   const [numberOfComments, setNumberOfComments] = useState(
     article.numberOfComments
@@ -255,7 +256,7 @@ export const ArticleCard = ({
             <GoComment
               style={{ marginRight: "8px", height: "23px", width: "20px" }}
             />
-            <span>Comments ({numberOfComments})</span>
+            <span>Comments ({numberOfComments ? numberOfComments : 0})</span>
           </Button>
           <div
             style={{

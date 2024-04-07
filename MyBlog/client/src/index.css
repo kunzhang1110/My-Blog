@@ -15,7 +15,7 @@ textarea {
 
 .alert-top {
   position: fixed;
-  top: 10%;
+  top: 15%;
   left: 50%;
   transform: translateX(-50%);
 }
@@ -24,7 +24,8 @@ textarea {
   position: relative;
   height: var(--articleEditTextAreaHeight);
   background-color: #ffffff;
-  overflow: scroll;
+  overflow-x: auto;
+  overflow-y: auto;
 }
 
 .article-card-comment-collapse-btn {
@@ -76,11 +77,11 @@ textarea {
 }
 
 .page-breadbrumb {
-  position: sticky;
   top: calc(var(--side-bar-sticky-top-position) - 20px);
   z-index: 1019;
   background-color: var(--background-color);
   padding: 20px 0 5px 0;
+  position: sticky;
 }
 
 .btn-loading {
@@ -171,6 +172,22 @@ textarea {
 .sidebar {
   position: sticky;
   top: var(--side-bar-sticky-top-position);
+}
+
+.scroll-up-arrow {
+  width: 2.2rem;
+  height: 2.2rem;
+  position: fixed;
+  bottom: 3vh;
+  right: 5vw;
+  padding: 0;
+  border-radius: 4px;
+  border-color: transparent;
+  box-shadow: rgb(132, 145, 165) 0px 1px 3px;
+}
+
+.scroll-up-arrow:focus {
+  box-shadow: rgb(132, 145, 165) 0px 1px 3px;
 }
 
 #email {

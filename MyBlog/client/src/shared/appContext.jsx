@@ -18,6 +18,7 @@ export const appContext = createContext(null);
 export const AppContextProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const jwtHeader = user?.token
     ? {
@@ -28,10 +29,12 @@ export const AppContextProvider = ({ children }) => {
   const validateToken = useCallback((_user, validHandler = null) => {
     if (_user && new Date(_user.expiration) - new Date() > 0) {
       if (validHandler) validHandler(_user);
+      setIsLoading(false);
       return true;
     } else {
       setUser(DEFAULT_USER);
       localStorage.removeItem("storedUser");
+      setIsLoading(false);
       return false;
     }
   }, []);
@@ -98,9 +101,11 @@ export const AppContextProvider = ({ children }) => {
   };
 
   const articles = {
-    getArticle: (id) => fetch(`/api/articles/${id}`).then((res) => res.json()),
+    getArticle: (id) => {
+      return fetch(`/api/articles/${id}`).then((res) => res.json());
+    },
 
-    getArticles: (categoryName, pageNumber = 1, orderBy = "dateAsc") => {
+    getArticles: (pageNumber = 1, orderBy = "dateAsc", categoryName) => {
       let params = {
         orderBy,
         pageNumber,
@@ -216,6 +221,8 @@ export const AppContextProvider = ({ children }) => {
       setUser(_user);
     });
   }, [validateToken]);
+
+  if (isLoading) return <></>;
 
   return (
     <appContext.Provider

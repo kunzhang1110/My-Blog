@@ -3,11 +3,13 @@ import { useMatches } from "react-router-dom";
 import { Breadcrumb, BreadcrumbItem } from "reactstrap";
 
 export const AppBreadCrumb = () => {
-  let matches = useMatches(); //mathces portions of the paths
+  const matches = useMatches(); //mathces portions of the paths
 
-  let filteredMatches = matches.filter((match) => Boolean(match.handle?.crumb));
+  const filteredMatches = matches.filter((match) =>
+    Boolean(match.handle?.crumb)
+  );
 
-  let crumbs = filteredMatches.map((match, index) => {
+  const crumbs = filteredMatches.map((match, index) => {
     return match.handle.crumb(match.data, index === filteredMatches.length - 1);
   });
 

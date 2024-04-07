@@ -250,7 +250,7 @@ export const ArticleEditPage = () => {
           }
         });
     }
-  }, [id]);
+  }, [id, api.articles]);
 
   useEffect(() => {
     if (isAlertOpen) {
@@ -400,7 +400,11 @@ export const ArticleEditPage = () => {
                     <Col md={6}>
                       <div className="article-edit-preview p-2">
                         <AppReactMarkdown
-                          children={body.text}
+                          children={
+                            body.text !== ""
+                              ? body.text
+                              : "Preview Markdown here..."
+                          }
                           imgFunc={({ node, src, ...props }) => {
                             let altText = "";
                             let image = images.find(
@@ -464,23 +468,28 @@ export const ArticleEditPage = () => {
                   <FormGroup className="mt-2">
                     <h4>Upload Images and Markdown Files</h4>
 
-                    <div className="dropzone">
-                      <p>Drop images and Mardown files anywhere on the page</p>
+                    <div className="dropzone mt-2 justify-content-center">
+                      <span className="m-2">
+                        Drop images and Mardown files anywhere on the page.
+                      </span>
                     </div>
-                    <FormText>
-                      <ul>
-                        <li>
-                          Drag a markdown file AND its associated image folder
-                          together and drop anywhere on page. Upon uploading,
-                          folder path references used in the markdown file will
-                          be removed.
-                        </li>
-                        <li>
-                          Click image name to copy markdown syntax text for the
-                          image to clipboard.
-                        </li>
-                      </ul>
-                    </FormText>
+                    <div className="mt-2">
+                      <FormText>
+                        <ul>
+                          <li>
+                            Drag a markdown file AND its associated image folder
+                            together and drop anywhere on page. Upon uploading,
+                            folder path references used in the markdown file
+                            will be removed.
+                          </li>
+                          <li>
+                            Click image name to copy markdown syntax text for
+                            the image to clipboard.
+                          </li>
+                        </ul>
+                      </FormText>
+                    </div>
+
                     {/* image cards */}
                     <div className="mt-2 d-flex  flex-wrap justify-content-start align-items-start">
                       {images.length > 0 ? (
@@ -515,7 +524,7 @@ export const ArticleEditPage = () => {
                       isOpen={isAlertOpen}
                       className="alert-top"
                     >
-                      Image Name Copied!
+                      Image name copied!
                     </Alert>
                   </FormGroup>
                 </Form>
