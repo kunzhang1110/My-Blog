@@ -90,6 +90,7 @@ export const ArticleEditPage = () => {
       if (md_file != null) {
         const reader = new FileReader();
         reader.onload = () => {
+          console.log(reader.result);
           const content = reader.result
             .toString()
             .trim()

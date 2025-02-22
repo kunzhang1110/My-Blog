@@ -40,16 +40,16 @@ export const ArticleList = ({
             <CardBody>
               <ButtonGroup>
                 <ArticleListTopButton
-                  Icon={FaArchive}
-                  iconSize={23}
-                  orderByString={"dateAsc"}
-                  text="Oldest"
-                />
-                <ArticleListTopButton
                   Icon={FaNewspaper}
                   iconSize={27}
                   orderByString={"dateDesc"}
                   text="Newest"
+                />
+                <ArticleListTopButton
+                  Icon={FaArchive}
+                  iconSize={23}
+                  orderByString={"dateAsc"}
+                  text="Oldest"
                 />
                 <ArticleListTopButton
                   Icon={FaCommentDots}

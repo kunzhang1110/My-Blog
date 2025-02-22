@@ -11,7 +11,7 @@ import { Spinner } from "../components/Spinner";
 export const ArticlesListPage = () => {
   const [articlesList, setArticlesList] = useState([]);
   const [paginationData, setPaginationData] = useState({});
-  const [orderBy, setOrderby] = useState("dateAsc");
+  const [orderBy, setOrderby] = useState("dateDesc"); // default order by newest
   const [scrollPosition, setScrollPosition] = useState(0);
   const [isAlertOpen, setIsAlertOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +21,7 @@ export const ArticlesListPage = () => {
   const navigate = useNavigate();
 
   const getArticlesList = useCallback(
-    (pageNumber, orderBy = "dateAsc", category) => {
+    (pageNumber, orderBy = "dateDesc", category) => {
       setIsLoading(true);
       api.articles
         .getArticles(pageNumber, orderBy, category)
@@ -72,7 +72,7 @@ export const ArticlesListPage = () => {
     if (user != null) {
       document.title = "Kun's Blog - " + (category ? category : "Home");
       setIsLoading(true);
-      getArticlesList(1, "dateAsc", category);
+      getArticlesList(1, "dateDesc", category);
     }
   }, [category, user, getArticlesList]);
 
