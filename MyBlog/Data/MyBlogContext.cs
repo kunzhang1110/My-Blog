@@ -19,7 +19,6 @@ namespace My_Blog.Data
 
         public MyBlogContext(DbContextOptions<MyBlogContext> options) : base(options)
         {
-            Database.EnsureCreated();
         }
 
         public virtual DbSet<Article> Articles { get; set; } = null!;

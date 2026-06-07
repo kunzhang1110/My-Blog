@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using MyBlog.Models.Account;
@@ -123,7 +125,14 @@ var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
 try
 {
-    await context.Database.MigrateAsync(); //apply migrations
+    // Guard: never let EF Core create the database. A bare CREATE DATABASE defaults to the
+    // expensive provisioned tier; the DB must be pre-provisioned at serverless (GP_S_Gen5).
+    var databaseCreator = context.Database.GetService<IRelationalDatabaseCreator>();
+    if (!await databaseCreator.ExistsAsync())
+        throw new InvalidOperationException(
+            "MyDatabase does not exist. Create it at the serverless tier (GP_S_Gen5) before starting the app.");
+
+    await context.Database.MigrateAsync(); //apply migrations to the existing database
     await DbInitializer.Initialize(context, userManager, roleManager); //if context is empty, initialize the database
 }
 catch (Exception ex)
